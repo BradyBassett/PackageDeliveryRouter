@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 
 
 class Graph:
-    def __int__(self) -> None:
+    def __init__(self) -> None:
         self.nodes: list["Node"] = []
         self.edges: list["Edge"] = []
 

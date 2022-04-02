@@ -18,7 +18,8 @@ class Application:
 
     def start(self) -> None:
         self.load_packages()
-        # self.load_distances()
+        self.load_distances()
+        print(self.graph.nodes[2])
 
     def load_packages(self) -> None:
         with open("data/packages.csv") as file:
@@ -36,8 +37,13 @@ class Application:
 
         with open("data/distances.csv") as file:
             file_data: reader = reader(file)
-            for row in file_data:
-                pass
+            for i, row in enumerate(file_data):
+                for j in range(i):
+                    if i is not j:
+                        node_1: "Node" = self.graph.nodes[i]
+                        node_2: "Node" = self.graph.nodes[j]
+                        self.graph.add_edge(Edge(node_1, node_2, row[j]))
+
 
 def main() -> None:
     Application().start()

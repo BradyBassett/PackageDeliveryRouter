@@ -10,6 +10,7 @@ class Node:
         self.node_address: str = node_address
         self.node_zipcode: str = node_zipcode
         self.edges: list["Edge"] = []
+        self.weight: float = 0
 
     def __repr__(self) -> str:
         return f"ID: {self.node_id}, Name: {self.node_name}, Address: {self.node_address}, ZipCode: " \
