@@ -4,8 +4,9 @@ if TYPE_CHECKING:
 
 
 class Tree:
-    def __init__(self, value: "Node"):
+    def __init__(self, value: "Node", priority: int):
         self.value: "Node" = value
+        self.priority: int = priority
         self.child: list["Tree"] = []
         self.order: int = 0
 
