@@ -10,6 +10,7 @@ from models.graph import Graph
 from models.edge import Edge
 from models.node import Node
 from models.heap import Heap
+from models.tree import Tree
 from models.truck import Truck
 from models.driver import Driver
 
@@ -28,6 +29,7 @@ class Application:
     def start(self) -> None:
         self.load_packages()
         self.load_distances()
+        self.load_heap()
 
     def load_packages(self) -> None:
         with open("data/packages.csv") as file:
@@ -53,6 +55,10 @@ class Application:
                         self.graph.add_edge(Edge(node_1, node_2, row[j]))
 
     def load_heap(self) -> None:
+        for node in self.graph.nodes:
+            self.heap.insert(Tree(node, node.))
+
+    def load_trucks(self) -> None:
         pass
 
 
