@@ -9,17 +9,25 @@ from models.hash_table import HashTable
 from models.graph import Graph
 from models.edge import Edge
 from models.node import Node
+from models.heap import Heap
+from models.truck import Truck
+from models.driver import Driver
+
+NUMBER_OF_TRUCKS: int = 3
+NUMBER_OF_DRIVERS: int = 2
 
 
 class Application:
     def __init__(self) -> None:
-        self.packages: HashTable = HashTable()
-        self.graph: Graph = Graph()
+        self.packages: "HashTable" = HashTable()
+        self.graph: "Graph" = Graph()
+        self.heap: "Heap" = Heap()
+        self.trucks: list["Truck"] = [Truck(i + 1) for i in range(NUMBER_OF_TRUCKS)]
+        self.drivers: list["Driver"] = [Driver(i + 1) for i in range(NUMBER_OF_DRIVERS)]
 
     def start(self) -> None:
         self.load_packages()
         self.load_distances()
-        print(self.graph.nodes[2])
 
     def load_packages(self) -> None:
         with open("data/packages.csv") as file:
@@ -43,6 +51,9 @@ class Application:
                         node_1: "Node" = self.graph.nodes[i]
                         node_2: "Node" = self.graph.nodes[j]
                         self.graph.add_edge(Edge(node_1, node_2, row[j]))
+
+    def load_heap(self) -> None:
+        pass
 
 
 def main() -> None:

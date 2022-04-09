@@ -25,7 +25,7 @@ class HashTable:
     Space-time complexity: O(N)
     """
     def lookup(self, key: Any) -> Any:
-        index: int = self._hash_key(key, len(self.table))
+        index: int = hash_key(key, len(self.table))
         if self.table[index] is None:
             return None
 
@@ -38,7 +38,7 @@ class HashTable:
         if load_factor >= .8:
             self._resize()
 
-        index: int = self._hash_key(key, len(self.table))
+        index: int = hash_key(key, len(self.table))
         increment: bool = True
         for pair in self.table[index]:
             if pair[0] is key:
@@ -46,10 +46,10 @@ class HashTable:
         if increment:
             self.table_items += 1
 
-        self._add_pair(key, value, self.table)
+        add_pair(key, value, self.table)
 
     def remove(self, key: Any) -> Any:
-        index = self._hash_key(key, len(self.table))
+        index = hash_key(key, len(self.table))
         if self.table[index] is None:
             return None
 
@@ -57,9 +57,6 @@ class HashTable:
             if pair[0] == key:
                 self.table_items -= 1
                 return self.table[index].pop(i)
-
-    def _hash_key(self, key: Any, table_len: int) -> int:
-        return hash(key) % table_len
 
     def _resize(self) -> None:
         new_table: list[list[Any]] = []
@@ -69,12 +66,17 @@ class HashTable:
         for item in self.table:
             if item is not None:
                 for key, value in item:
-                    self._add_pair(key, value, new_table)
+                    add_pair(key, value, new_table)
         self.table = new_table
 
-    def _add_pair(self, key: Any, value: Any, table: list[list[Any]]) -> None:
-        index: int = self._hash_key(key, len(table))
-        if table[index] is None:
-            table.append([key, value])
-        else:
-            table[index] = [[key, value]]
+
+def hash_key(key: Any, table_len: int) -> int:
+    return hash(key) % table_len
+
+
+def add_pair(key: Any, value: Any, table: list[list[Any]]) -> None:
+    index: int = hash_key(key, len(table))
+    if table[index] is None:
+        table.append([key, value])
+    else:
+        table[index] = [[key, value]]

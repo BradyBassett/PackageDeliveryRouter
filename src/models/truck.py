@@ -15,6 +15,7 @@ class Truck:
         self.capacity: int = MAX_CAPACITY
         self.packages: list["Package"] = []
         self.avg_speed: int = AVG_SPEED  # MPH
+        self.distance_traveled: float = 0.0
 
     def __repr__(self) -> str:
         return f"Truck ID: {self.truck_id}, Current Driver: {self.driver.driver_id}, Packages Loaded: {self.packages}"

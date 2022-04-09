@@ -1,5 +1,6 @@
-from datetime import datetime
+from typing import Optional
 import re
+from datetime import datetime
 
 
 class Package:
@@ -10,7 +11,7 @@ class Package:
         self.city: str = city
         self.state: str = state
         self.zipcode: int = zipcode
-        self.delivery_deadline: datetime = get_deadline(deadline)
+        self.delivery_deadline: Optional[datetime] = get_deadline(deadline)
         self.weight: int = weight
         self.special_notes: str = special_notes
 
@@ -23,9 +24,9 @@ class Package:
         pass
 
 
-def get_deadline(deadline: str) -> datetime:
+def get_deadline(deadline: str) -> Optional[datetime]:
     if deadline == "EOD":
-        return datetime.now()
+        return None
 
     temp = re.split("[: ]", deadline)
     if temp[2] == "PM":

@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING, Optional
 from math import frexp
-from tree import Tree
 
 if TYPE_CHECKING:
     from node import Node
+    from tree import Tree
 
 
 class Heap:
@@ -12,11 +12,10 @@ class Heap:
         self.min: Optional["Tree"] = None
         self.count: int = 0
 
-    def insert(self, node: "Node") -> None:
-        temp_tree: "Tree" = Tree(node)
-        self.trees.append(temp_tree)
-        if self.min is None or node.weight < self.min.value.weight:
-            self.min = temp_tree
+    def insert(self, tree: "Tree") -> None:
+        self.trees.append(tree)
+        if self.min is None or tree.priority < self.min.priority:
+            self.min = tree
         self.count += 1
 
     def extract_min(self) -> "Node":
@@ -43,7 +42,7 @@ class Heap:
             self.trees.remove(x)
             while temp[order] is not None:
                 y: "Tree" = temp[order]
-                if x.value.weight > y.value.weight:
+                if x.priority > y.priority:
                     x, y = y, x
                 x.append_tree(y)
                 temp[order] = None
@@ -53,5 +52,5 @@ class Heap:
         for tree in temp:
             if tree is not None:
                 self.trees.append(tree)
-                if self.min is None or tree.value.weight < self.min.value.weight:
+                if self.min is None or tree.priority < self.min.priority:
                     self.min = tree
