@@ -20,8 +20,29 @@ class Package:
                f"Zipcode: {self.zipcode}, Delivery Deadline: {self.delivery_deadline}, Weight: {self.weight},\n" \
                f"Special Notes: {self.special_notes}"
 
-    def calculate_priority(self):
-        pass
+    def calculate_priority(self) -> int:
+        priority: int = 0
+
+        cities = {
+            "Salt Lake City": 5,
+            "West Valley City": 4,
+            "Millcreek": 3,
+            "Holladay": 2,
+            "Murray": 1
+        }
+
+        if self.delivery_deadline is not None:
+            priority += 5
+        if "Delayed on flight---will not arrive to depot until 9:05 am" == self.special_notes:
+            priority += 7
+        if "Can only be on truck 2" == self.special_notes:
+            priority += 4
+        if "Wrong address listed" == self.special_notes:
+            priority += 7
+        if "Must be delivered" in self.special_notes:
+            priority += 4
+
+        return priority + cities[self.city]
 
 
 def get_deadline(deadline: str) -> Optional[datetime]:

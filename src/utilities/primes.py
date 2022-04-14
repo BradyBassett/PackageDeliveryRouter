@@ -1,4 +1,4 @@
-def generate_next_prime(num):
+def generate_next_prime(num: int) -> int:
     if num <= 1:
         return 2
 
@@ -8,7 +8,7 @@ def generate_next_prime(num):
             return num
 
 
-def is_prime(num):
+def is_prime(num: int) -> bool:
     if num % 2 == 0:
         return False
     for i in range(3, int(num**0.5 + 1), 2):

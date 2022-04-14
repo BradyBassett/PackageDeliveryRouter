@@ -33,7 +33,7 @@ class Heap:
             self.count -= 1
             return least.value
 
-    def consolidate(self):
+    def consolidate(self) -> None:
         temp: list[Optional["Tree"]] = frexp(self.count)[1] * [None]
 
         while self.trees:
