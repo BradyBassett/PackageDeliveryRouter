@@ -13,3 +13,8 @@ class Edge:
 
     def __repr__(self) -> str:
         return f"{self.distance} miles between {self.node_1.node_name} and {self.node_2.node_name}"
+
+    def eligible(self, nodes: list["Node"]) -> bool:
+        # Intended to check a group of nodes and see if any of them are present within the current edge to filter
+        # out all nodes that aren't needed to be checked for the current trucks route
+        return bool(set(nodes) & {self.node_1, self.node_2})
