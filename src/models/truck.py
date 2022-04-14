@@ -16,6 +16,24 @@ class Truck:
         self.packages: list["Package"] = []
         self.avg_speed: int = AVG_SPEED  # MPH
         self.distance_traveled: float = 0.0
+        self.current_address: str = "HUB"
 
     def __repr__(self) -> str:
         return f"Truck ID: {self.truck_id}, Current Driver: {self.driver.driver_id}, Packages Loaded: {self.packages}"
+
+    def load_package(self, package: "Package") -> None:
+        self.packages.append(package)
+
+    def get_total_packages(self) -> int:
+        return len(self.packages)
+
+    def go_to_next_node(self, next_node_address: str):
+        self.current_address = next_node_address
+        self.deliver_package()
+
+    def deliver_package(self) -> list["Package"]:
+        matching_packages: list["Package"] = []
+        for index, package in enumerate(self.packages):
+            if package.address == self.current_address:
+                matching_packages.append(self.packages.pop(index))
+        return matching_packages
