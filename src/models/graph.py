@@ -11,9 +11,14 @@ def get_closest_node(node: "Node") -> "Node":
 
 
 class Graph:
-    def __init__(self) -> None:
-        self.nodes: list["Node"] = []
-        self.edges: list["Edge"] = []
+    def __init__(self, nodes=None, edges=None) -> None:
+        if nodes is None:
+            nodes = []
+        if edges is None:
+            edges = []
+
+        self.nodes: list["Node"] = nodes
+        self.edges: list["Edge"] = edges
 
     def add_node(self, node: "Node") -> None:
         self.nodes.append(node)
