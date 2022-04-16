@@ -24,11 +24,11 @@ class Package:
         priority: int = 0
 
         cities = {
-            "Salt Lake City": 5,
-            "West Valley City": 4,
+            "Salt Lake City": 1,
+            "West Valley City": 2,
             "Millcreek": 3,
-            "Holladay": 2,
-            "Murray": 1
+            "Holladay": 4,
+            "Murray": 5
         }
 
         if self.delivery_deadline is not None:
