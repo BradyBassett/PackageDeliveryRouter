@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 
 
 def get_closest_node(node: "Node") -> "Node":
-    edges: list["Edge"] = node.edges
+    edges: list[Edge] = node.edges
     edges.sort(key=lambda edge: edge.distance)
     return edges[0].node_2 if node == edges[0].node_1 else edges[0].node_1
 
@@ -17,11 +17,21 @@ class Graph:
         if edges is None:
             edges = []
 
-        self.nodes: list["Node"] = nodes
-        self.edges: list["Edge"] = edges
+        self.nodes: list[Node] = nodes
+        self.edges: list[Edge] = edges
 
     def add_node(self, node: "Node") -> None:
         self.nodes.append(node)
+
+    def pop_node(self, node: "Node") -> Optional["Node"]:
+        for index, arr_node in enumerate(self.nodes):
+            if arr_node == node:
+                return self.nodes.pop(index)
+
+    def pop_edge(self, edge: "Edge") -> Optional["Edge"]:
+        for index, arr_edge in enumerate(self.edges):
+            if arr_edge == edge:
+                return self.edges.pop(index)
 
     def add_edge(self, edge: "Edge") -> None:
         self.edges.append(edge)
