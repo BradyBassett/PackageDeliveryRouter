@@ -18,10 +18,10 @@ NUMBER_OF_DRIVERS: int = 2
 
 class Application:
     def __init__(self) -> None:
-        self.packages: "HashTable" = HashTable()
-        self.graph: "Graph" = Graph()
-        self.trucks: list["Truck"] = [Truck(i + 1) for i in range(NUMBER_OF_TRUCKS)]
-        self.drivers: list["Driver"] = [Driver(i + 1) for i in range(NUMBER_OF_DRIVERS)]
+        self.packages: HashTable = HashTable()
+        self.graph: Graph = Graph()
+        self.trucks: list[Truck] = [Truck(i + 1) for i in range(NUMBER_OF_TRUCKS)]
+        self.drivers: list[Driver] = [Driver(i + 1) for i in range(NUMBER_OF_DRIVERS)]
 
     def start(self) -> None:
         self.load_packages()
@@ -39,10 +39,13 @@ class Application:
                 self.packages.insert(package.package_id, package)
 
     def load_trucks(self):
-        # TODO - eventually calculate more optimal truck loading based on special notes
         truck_index = 0
         for i in range(self.packages.table_items):
-            self.trucks[truck_index].load_package(self.packages.lookup(i + 1))
+            package: "Package" = self.packages.lookup(i + 1)
+            if package.delivery_deadline is not None:
+                self.trucks[truck_index].load_package(package)
+                continue
+
             if self.trucks[truck_index].get_total_packages() == self.trucks[truck_index].capacity:
                 truck_index += 1
 
@@ -57,17 +60,17 @@ class Application:
             for i, row in enumerate(file_data):
                 for j in range(i):
                     if i is not j:
-                        node_1: "Node" = self.graph.nodes[i]
-                        node_2: "Node" = self.graph.nodes[j]
+                        node_1: Node = self.graph.nodes[i]
+                        node_2: Node = self.graph.nodes[j]
                         self.graph.add_edge(Edge(node_1, node_2, float(row[j])))
 
-    def filter_truck_graph(self, index: int) -> "Graph":
+    def filter_truck_graph(self, index: int) -> Graph:
         package_addresses: list[str] = [p.address for p in self.trucks[index].packages]
-        package_nodes: list["Node"] = [n for n in self.graph.nodes if n.node_address in package_addresses
-                                       or n.node_address == "HUB"]
+        package_nodes: list[Node] = [n for n in self.graph.nodes if n.node_address in package_addresses
+                                     or n.node_address == "HUB"]
         filtered_edges: filter = filter(lambda x: x.eligible(package_nodes), self.graph.edges)
 
-        truck_graph: "Graph" = Graph(package_nodes, filtered_edges)
+        truck_graph: Graph = Graph(package_nodes, filtered_edges)
         for edge in truck_graph.edges:
             edge.calculate_priority(self.trucks[index].packages)
 
