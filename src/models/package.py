@@ -30,17 +30,17 @@ class Package:
             "Holladay": 4,
             "Murray": 5
         }
-
-        if self.delivery_deadline is not None:
-            priority += 5
-        if "Delayed on flight---will not arrive to depot until 9:05 am" == self.special_notes:
-            priority += 7
-        if "Can only be on truck 2" == self.special_notes:
-            priority += 4
-        if "Wrong address listed" == self.special_notes:
-            priority += 7
-        if "Must be delivered" in self.special_notes:
-            priority += 4
+        match self.delivery_deadline:
+            case "Delayed on flight---will not arrive to depot until 9:05 am":
+                priority += 6
+            case "Can only be on truck 2":
+                priority += 4
+            case "Wrong address listed":
+                priority += 7
+            case "Must be delivered":
+                priority += 4
+            case _:
+                priority += 5
 
         return priority + cities[self.city]
 
