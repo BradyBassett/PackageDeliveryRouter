@@ -23,6 +23,7 @@ class Truck:
         self.distance_traveled: float = 0.0
         self.current_address: str = "HUB"
         self.delivery_graph: Optional[Graph] = None
+        self.delivery_path: list["Edge"] = []
 
     def __repr__(self) -> str:
         return f"Truck ID: {self.truck_id}, Current Driver: {self.driver.driver_id}, Packages Loaded: {self.packages}"
@@ -33,26 +34,37 @@ class Truck:
     def get_total_packages(self) -> int:
         return len(self.packages)
 
-    def determine_path(self, src: str, dest: str):
-        self.delivery_graph.get_node_by_address(src).cost = 0
-        min_queue: heapq = []
-        path: list["Edge"] = []
-        heapq.heapify(min_queue)
+    def get_max_priority(self) -> str:
+        max_priority: int = sys.maxsize
+        result: str = ""
+        for package in self.packages:
+            if max_priority <= package.priority:
+                max_priority = package.priority
+                result = package.address
+        return result
 
-        for node in self.delivery_graph.nodes:
-            heapq.heappush(min_queue, node)
+    def determine_path(self, src: str, dest: str) -> list["Edge"]:
+        # self.delivery_graph.get_node_by_address(src).cost = 0
+        # min_queue: heapq = []
+        # path: list["Edge"] = []
+        # heapq.heapify(min_queue)
+        #
+        # for node in self.delivery_graph.nodes:
+        #     heapq.heappush(min_queue, node)
+        #
+        # while len(min_queue) != 0:
+        #     min_node: Node = heapq.heappop(min_queue)
+        #
+        #     for edge in min_node.edges:
+        #         alt: float = edge.priority
+        #         if alt < edge.node_1.cost and edge.node_1 in self.delivery_graph.nodes:
+        #             self.delivery_graph.get_node_by_address(edge.node_1.node_address).cost = alt
+        #             self.delivery_graph.get_node_by_address(edge.node_1.node_address).prev_node.append(min_node)
+        #             heapq.heappush(min_queue, edge.node_1)
+        #     self.delivery_graph.pop_node(min_node)
 
-        while len(min_queue) != 0:
-            min_node: Node = heapq.heappop(min_queue)
-            for edge in min_node.edges:
-                alt: float = edge.priority
-                if alt < edge.node_1.cost and edge.node_1 in self.delivery_graph.nodes:
-                    self.delivery_graph.get_node_by_address(edge.node_1.node_address).cost = alt
-                    self.delivery_graph.get_node_by_address(edge.node_1.node_address).prev_node.append(min_node)
-                    heapq.heappush(min_queue, edge.node_1)
 
-        print(self.delivery_graph.get_node_by_address(dest).prev_node)
-        return self.delivery_graph.get_node_by_address(dest).prev_node.append(self.delivery_graph.get_node_by_address(dest))
+        return path
 
     def go_to_next_node(self, next_node_address: str) -> None:
         self.current_address = next_node_address
