@@ -29,6 +29,7 @@ class Application:
         self.load_distances()
         for i in range(len(self.trucks)):
             self.trucks[i].delivery_graph = self.filter_truck_graph(i)
+            self.trucks[i].determine_path("HUB", self.trucks[i].get_max_priority())
 
     def load_packages(self) -> None:
         with open("data/packages.csv") as file:
@@ -38,13 +39,23 @@ class Application:
                                            int(row[4]), row[5], int(row[6]), row[7])
                 self.packages.insert(package.package_id, package)
 
-    def load_trucks(self):
+    def load_trucks(self) -> None:
         truck_index = 0
         for i in range(self.packages.table_items):
             package: "Package" = self.packages.lookup(i + 1)
-            if package.delivery_deadline is not None:
-                self.trucks[truck_index].load_package(package)
+            if package.special_notes == "Can only be on truck 2":
+                self.trucks[1].load_package(package)
                 continue
+            elif package.special_notes == "Wrong address listed" or package.special_notes == "Delayed on " \
+                                                                                             "flight---will not " \
+                                                                                             "arrive to depot until " \
+                                                                                             "9:05 am" or "Must be " \
+                                                                                                          "delivered " \
+                                                                                                          "with" in \
+                    package.special_notes:
+                self.trucks[2].load_package(package)
+            else:
+                self.trucks[truck_index].load_package(package)
 
             if self.trucks[truck_index].get_total_packages() == self.trucks[truck_index].capacity:
                 truck_index += 1
