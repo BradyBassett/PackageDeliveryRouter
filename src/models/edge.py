@@ -31,5 +31,5 @@ class Edge:
         priority: float = self.distance
         for package in packages:
             if package.address == self.node_2.node_address:
-                priority += package.calculate_priority()
+                priority += package.priority
         self.priority += priority
