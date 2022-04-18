@@ -14,6 +14,7 @@ class Package:
         self.delivery_deadline: Optional[datetime] = get_deadline(deadline)
         self.weight: int = weight
         self.special_notes: str = special_notes
+        self.priority: int = self.calculate_priority()
 
     def __repr__(self) -> str:
         return f"ID: {self.package_id}, Address: {self.address}, City: {self.city}, State: {self.state},\n" \
