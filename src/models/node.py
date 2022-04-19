@@ -12,11 +12,10 @@ class Node:
         self.node_zipcode: str = node_zipcode
         self.edges: list["Edge"] = []
         self.cost: float = sys.maxsize
-        self.prev_node: list[Node] = []
+        self.prev_nodes: list[Node] = []
 
     def __repr__(self) -> str:
-        return f"ID: {self.node_id}, Name: {self.node_name}, Address: {self.node_address}, ZipCode: " \
-               f"{self.node_zipcode},\nEdge Ids: {self.edges}"
+        return f"{self.node_id}, {self.node_name}"
 
     def __hash__(self):
         return id(self)
