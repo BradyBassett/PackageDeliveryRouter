@@ -1,4 +1,5 @@
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
+from .hash_table import HashTable
 if TYPE_CHECKING:
     from node import Node
     from edge import Edge
@@ -7,41 +8,27 @@ if TYPE_CHECKING:
 def get_closest_node(node: "Node") -> "Node":
     edges: list[Edge] = node.edges
     edges.sort(key=lambda edge: edge.distance)
-    return edges[0].node_2 if node == edges[0].node_1 else edges[0].node_1
+    return edges[0].origin if node == edges[0].destination else edges[0].destination
 
 
 class Graph:
     def __init__(self, nodes=None, edges=None) -> None:
         if nodes is None:
-            nodes = []
+            nodes: HashTable = HashTable()
         if edges is None:
-            edges = []
+            edges: HashTable = HashTable()
 
-        self.nodes: list[Node] = nodes
-        self.edges: list[Edge] = edges
+        self.nodes: HashTable = nodes
+        self.edges: HashTable = edges
 
     def add_node(self, node: "Node") -> None:
-        self.nodes.append(node)
-
-    def pop_node(self, node: "Node") -> Optional["Node"]:
-        for index, arr_node in enumerate(self.nodes):
-            if arr_node == node:
-                return self.nodes.pop(index)
-
-    def pop_edge(self, edge: "Edge") -> Optional["Edge"]:
-        for index, arr_edge in enumerate(self.edges):
-            if arr_edge == edge:
-                return self.edges.pop(index)
+        self.nodes.insert(node.node_address, node)
 
     def add_edge(self, edge: "Edge") -> None:
-        self.edges.append(edge)
+        self.edges.insert((edge.origin.node_address, edge.destination.node_address), edge)
 
-    def get_node_by_address(self, address: str) -> Optional["Node"]:
-        for node in self.nodes:
-            if node.node_address == address:
-                return node
+    def lookup_node(self, address: str):
+        return self.nodes.lookup(address)
 
-    def get_edge_by_addresses(self, address_1: str, address_2: str) -> Optional["Edge"]:
-        for edge in self.edges:
-            if edge.node_1 == address_1 and edge.node_2 == address_2:
-                return edge
+    def lookup_edge(self, origin_address: str, destination_address: str):
+        return self.edges.lookup((origin_address, destination_address))
