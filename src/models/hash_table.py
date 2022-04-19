@@ -46,7 +46,7 @@ class HashTable:
         if increment:
             self.table_items += 1
 
-        add_pair(key, value, self.table)
+        add_pair(key, value, self.table, index)
 
     def remove(self, key: Any) -> Any:
         index = hash_key(key, len(self.table))
@@ -56,7 +56,7 @@ class HashTable:
         for i, pair in enumerate(self.table[index]):
             if pair[0] == key:
                 self.table_items -= 1
-                return self.table[index].pop(i)
+                return self.table[index].pop(i)[1]
 
     def _resize(self) -> None:
         new_table: list[list[Any]] = []
@@ -66,7 +66,7 @@ class HashTable:
         for item in self.table:
             if item is not None:
                 for key, value in item:
-                    add_pair(key, value, new_table)
+                    add_pair(key, value, new_table, hash_key(key, len(self.table)))
         self.table = new_table
 
 
@@ -74,9 +74,8 @@ def hash_key(key: Any, table_len: int) -> int:
     return hash(key) % table_len
 
 
-def add_pair(key: Any, value: Any, table: list[list[Any]]) -> None:
-    index: int = hash_key(key, len(table))
+def add_pair(key: Any, value: Any, table: list[list[Any]], index: int) -> None:
     if table[index] is None:
         table.append([key, value])
     else:
-        table[index] = [[key, value]]
+        table[index].append([key, value])
