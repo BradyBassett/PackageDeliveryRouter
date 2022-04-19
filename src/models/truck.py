@@ -1,6 +1,5 @@
-from typing import TYPE_CHECKING, Optional
 import sys
-import heapq
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from driver import Driver
@@ -35,7 +34,7 @@ class Truck:
         return len(self.packages)
 
     def get_max_priority(self) -> str:
-        max_priority: int = sys.maxsize
+        max_priority: int = -1
         result: str = ""
         for package in self.packages:
             if max_priority <= package.priority:
@@ -43,28 +42,22 @@ class Truck:
                 result = package.address
         return result
 
-    def determine_path(self, src: str, dest: str) -> list["Edge"]:
-        # self.delivery_graph.get_node_by_address(src).cost = 0
-        # min_queue: heapq = []
-        # path: list["Edge"] = []
-        # heapq.heapify(min_queue)
-        #
-        # for node in self.delivery_graph.nodes:
-        #     heapq.heappush(min_queue, node)
-        #
-        # while len(min_queue) != 0:
-        #     min_node: Node = heapq.heappop(min_queue)
-        #
-        #     for edge in min_node.edges:
-        #         alt: float = edge.priority
-        #         if alt < edge.node_1.cost and edge.node_1 in self.delivery_graph.nodes:
-        #             self.delivery_graph.get_node_by_address(edge.node_1.node_address).cost = alt
-        #             self.delivery_graph.get_node_by_address(edge.node_1.node_address).prev_node.append(min_node)
-        #             heapq.heappush(min_queue, edge.node_1)
-        #     self.delivery_graph.pop_node(min_node)
+    def determine_path(self):
+        curr_node: "Node" = self.delivery_graph.nodes.remove("HUB")
+        visited: list["Node"] = [curr_node]
+        while self.delivery_graph.nodes.table_items:
+            min_priority: tuple[str, float] = ("", sys.maxsize)
+            for edge in curr_node.edges:
+                if self.delivery_graph.lookup_node(edge.destination.node_address):
+                    if edge.priority < min_priority[1]:
+                        min_priority = (edge.destination.node_address, edge.priority)
+                elif self.delivery_graph.lookup_node(edge.origin.node_address):
+                    if edge.priority < min_priority[1]:
+                        min_priority = (edge.origin.node_address, edge.priority)
+            curr_node = self.delivery_graph.nodes.remove(min_priority[0])
+            visited.append(curr_node)
 
-
-        return path
+        return visited
 
     def go_to_next_node(self, next_node_address: str) -> None:
         self.current_address = next_node_address
