@@ -20,6 +20,8 @@ class Application:
     def __init__(self) -> None:
         self.packages: HashTable = HashTable()
         self.graph: Graph = Graph()
+        self.nodes: list["Node"] = []
+        self.edges: list["Edge"] = []
         self.trucks: list[Truck] = [Truck(i + 1) for i in range(NUMBER_OF_TRUCKS)]
         self.drivers: list[Driver] = [Driver(i + 1) for i in range(NUMBER_OF_DRIVERS)]
 
@@ -29,7 +31,7 @@ class Application:
         self.load_distances()
         for i in range(len(self.trucks)):
             self.trucks[i].delivery_graph = self.filter_truck_graph(i)
-            self.trucks[i].determine_path("HUB", self.trucks[i].get_max_priority())
+            self.trucks[i].delivery_graph = self.filter_truck_graph(i)
 
     def load_packages(self) -> None:
         with open("data/packages.csv") as file:
@@ -64,28 +66,40 @@ class Application:
         with open("data/addresses.csv") as file:
             file_data: reader = reader(file)
             for row in file_data:
-                self.graph.add_node(Node(int(row[0]), row[1], row[2], row[3]))
+                node: "Node" = Node(int(row[0]), row[1], row[2], row[3])
+                self.graph.add_node(node)
+                self.nodes.append(node)
 
         with open("data/distances.csv") as file:
             file_data: reader = reader(file)
             for i, row in enumerate(file_data):
                 for j in range(i):
                     if i is not j:
-                        node_1: Node = self.graph.nodes[i]
-                        node_2: Node = self.graph.nodes[j]
-                        self.graph.add_edge(Edge(node_1, node_2, float(row[j])))
+                        edge: "Edge" = Edge(self.nodes[j], self.nodes[i], float(row[j]))
+                        self.graph.add_edge(edge)
+                        self.edges.append(edge)
 
     def filter_truck_graph(self, index: int) -> Graph:
         package_addresses: list[str] = [p.address for p in self.trucks[index].packages]
-        package_nodes: list[Node] = [n for n in self.graph.nodes if n.node_address in package_addresses
-                                     or n.node_address == "HUB"]
-        filtered_edges: filter = filter(lambda x: x.eligible(package_nodes), self.graph.edges)
+        package_nodes: HashTable = HashTable(40)
+        temp_nodes: list["Node"] = []
+        i = 1
+        for node in self.nodes:
+            address: str = node.node_address
+            if address in package_addresses or address == "HUB":
+                package_nodes.insert(address, node)
+                i += 1
+                temp_nodes.append(node)
 
-        truck_graph: Graph = Graph(package_nodes, filtered_edges)
-        for edge in truck_graph.edges:
-            edge.calculate_priority(self.trucks[index].packages)
+        filtered_edges: HashTable = HashTable()
+        for edge in self.edges:
+            if edge.eligible(temp_nodes):
+                origin: str = edge.origin.node_address
+                destination: str = edge.destination.node_address
+                edge.calculate_priority(self.trucks[index].packages)
+                filtered_edges.insert((origin, destination), edge)
 
-        return truck_graph
+        return Graph(package_nodes, filtered_edges)
 
 
 def main() -> None:
