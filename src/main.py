@@ -31,7 +31,7 @@ class Application:
         self.load_distances()
         for i in range(len(self.trucks)):
             self.trucks[i].delivery_graph = self.filter_truck_graph(i)
-            self.trucks[i].delivery_graph = self.filter_truck_graph(i)
+            self.trucks[i].determine_path()
 
     def load_packages(self) -> None:
         with open("data/packages.csv") as file:
