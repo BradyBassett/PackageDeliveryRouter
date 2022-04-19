@@ -42,7 +42,7 @@ class Truck:
                 result = package.address
         return result
 
-    def determine_path(self):
+    def determine_path(self) -> None:
         curr_node: "Node" = self.delivery_graph.nodes.remove("HUB")
         visited: list["Node"] = [curr_node]
         while self.delivery_graph.nodes.table_items:
@@ -57,7 +57,7 @@ class Truck:
             curr_node = self.delivery_graph.nodes.remove(min_priority[0])
             visited.append(curr_node)
 
-        return visited
+        self.delivery_path = visited
 
     def go_to_next_node(self, next_node_address: str) -> None:
         self.current_address = next_node_address
