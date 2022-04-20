@@ -31,4 +31,7 @@ class Graph:
         return self.nodes.lookup(address)
 
     def lookup_edge(self, origin_address: str, destination_address: str):
-        return self.edges.lookup((origin_address, destination_address))
+        if self.edges.lookup((origin_address, destination_address)):
+            return self.edges.lookup((origin_address, destination_address))
+        else:
+            return self.edges.lookup((destination_address, origin_address))
