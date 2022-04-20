@@ -3,6 +3,7 @@ First
 Last
 ID
 """
+from datetime import datetime
 from csv import reader
 from models.package import Package
 from models.hash_table import HashTable
@@ -14,6 +15,11 @@ from models.driver import Driver
 
 NUMBER_OF_TRUCKS: int = 3
 NUMBER_OF_DRIVERS: int = 2
+FLIGHT_HOUR: int = 9
+FLIGHT_MINUTE: int = 5
+INFO_UPDATE_HOUR: int = 10
+INFO_UPDATE_MINUTE: int = 20
+START_HOUR: int = 8
 
 
 class Application:
@@ -24,6 +30,7 @@ class Application:
         self.edges: list["Edge"] = []
         self.trucks: list[Truck] = [Truck(i + 1) for i in range(NUMBER_OF_TRUCKS)]
         self.drivers: list[Driver] = [Driver(i + 1) for i in range(NUMBER_OF_DRIVERS)]
+        self.time: datetime = datetime(datetime.now().year, datetime.now().month, datetime.now().day, START_HOUR)
 
     def start(self) -> None:
         self.load_packages()
@@ -42,6 +49,7 @@ class Application:
                 self.packages.insert(package.package_id, package)
 
     def load_trucks(self) -> None:
+        # FIXME - PREVENT LOADING PACKAGES WITH SAME DELIVERY NODE ON SEPARATE TRUCK
         truck_index = 0
         for i in range(self.packages.table_items):
             package: "Package" = self.packages.lookup(i + 1)
@@ -91,7 +99,7 @@ class Application:
                 i += 1
                 temp_nodes.append(node)
 
-        filtered_edges: HashTable = HashTable()
+        filtered_edges: HashTable = HashTable(40)
         for edge in self.edges:
             if edge.eligible(temp_nodes):
                 origin: str = edge.origin.node_address
@@ -101,6 +109,14 @@ class Application:
 
         return Graph(package_nodes, filtered_edges)
 
+    def update(self):
+        flight_arrived: datetime = datetime(datetime.now().year, datetime.now().month, datetime.now().day, FLIGHT_HOUR,
+                                            FLIGHT_MINUTE)
+        package_info_updated: datetime = datetime(datetime.now().year, datetime.now().month, datetime.now().day,
+                                                  INFO_UPDATE_HOUR, INFO_UPDATE_MINUTE)
+
+        # TODO - loop through each truck and attempt to deliver packages, updating the delivery time and running time
+        # each cycle
 
 def main() -> None:
     Application().start()
