@@ -43,25 +43,34 @@ class Truck:
         return result
 
     def determine_path(self) -> None:
-        curr_node: "Node" = self.delivery_graph.nodes.remove("HUB")
-        visited: list["Node"] = [curr_node]
+        hub: "Node" = self.delivery_graph.nodes.remove("HUB")
+
+        curr_node: "Node" = hub
+        path: list["Edge"] = []
         while self.delivery_graph.nodes.table_items:
             min_priority: tuple[str, float] = ("", sys.maxsize)
+            min_edge: Optional["Edge"] = None
             for edge in curr_node.edges:
                 if self.delivery_graph.lookup_node(edge.destination.node_address):
                     if edge.priority < min_priority[1]:
                         min_priority = (edge.destination.node_address, edge.priority)
+                        min_edge = edge
                 elif self.delivery_graph.lookup_node(edge.origin.node_address):
                     if edge.priority < min_priority[1]:
                         min_priority = (edge.origin.node_address, edge.priority)
+                        min_edge = edge
             curr_node = self.delivery_graph.nodes.remove(min_priority[0])
-            visited.append(curr_node)
+            path.append(min_edge)
+        path.append(curr_node.edges[0])
+        self.delivery_path = path
 
-        self.delivery_path = visited
-
-    def go_to_next_node(self, next_node_address: str) -> None:
-        self.current_address = next_node_address
-        self.deliver_package()
+    def go_to_next_node(self, current_edge: "Edge") -> list["Package"]:
+        if current_edge.origin.node_address == self.current_address:
+            self.current_address = current_edge.origin.node_address
+        else:
+            self.current_address = current_edge.destination.node_address
+        self.distance_traveled += current_edge.distance
+        return self.deliver_package()
 
     def deliver_package(self) -> list["Package"]:
         matching_packages: list[Package] = []
