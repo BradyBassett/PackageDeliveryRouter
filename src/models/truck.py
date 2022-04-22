@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from edge import Edge
 
 MAX_CAPACITY: int = 16
-AVG_SPEED: int = 18
+AVG_SPEED: int = 18  # MPH
 
 
 class Truck:
@@ -18,7 +18,7 @@ class Truck:
         self.driver: Optional[Driver] = None
         self.capacity: int = MAX_CAPACITY
         self.packages: list[Package] = []
-        self.avg_speed: int = AVG_SPEED  # MPH
+        self.avg_speed: int = AVG_SPEED
         self.distance_traveled: float = 0.0
         self.current_address: str = "HUB"
         self.delivery_graph: Optional[Graph] = None
@@ -76,5 +76,6 @@ class Truck:
         matching_packages: list[Package] = []
         for index, package in enumerate(self.packages):
             if package.address == self.current_address:
+                package.delivered_time = self.driver.current_time
                 matching_packages.append(self.packages.pop(index))
         return matching_packages
