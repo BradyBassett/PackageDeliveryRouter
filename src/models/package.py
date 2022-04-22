@@ -18,31 +18,35 @@ class Package:
         self.delivered_time: Optional[datetime] = None
 
     def __repr__(self) -> str:
-        return f"ID: {self.package_id}, Address: {self.address}, City: {self.city}, State: {self.state},\n" \
-               f"Zipcode: {self.zipcode}, Delivery Deadline: {self.delivery_deadline}, Weight: {self.weight},\n" \
-               f"Special Notes: {self.special_notes}"
+        return f"\n{self.package_id}, {self.address}, {self.city}, {self.state}, {self.zipcode}, {self.priority}, " \
+               f"{self.delivery_deadline}, {self.special_notes}"
 
     def calculate_priority(self) -> int:
         priority: int = 0
 
         cities = {
-            "Salt Lake City": 1,
-            "West Valley City": 2,
-            "Millcreek": 3,
-            "Holladay": 4,
-            "Murray": 5
+            "Salt Lake City": 8,
+            "West Valley City": 6,
+            "Millcreek": 4,
+            "Holladay": 2,
+            "Murray": 0
         }
-        match self.delivery_deadline:
-            case "Delayed on flight---will not arrive to depot until 9:05 am":
-                priority += 6
-            case "Can only be on truck 2":
-                priority += 4
-            case "Wrong address listed":
-                priority += 7
-            case "Must be delivered":
-                priority += 4
-            case _:
-                priority += 5
+
+        if self.delivery_deadline is not None:
+            priority -= 5
+
+        if self.package_id in [13, 15, 19]:
+            priority = -8
+            self.special_notes = " "
+
+        if self.special_notes == "Delayed on flight---will not arrive to depot until 9:05 am":
+            priority += 8
+        elif self.special_notes == "Wrong address listed":
+            priority += 6
+        elif "Must be delivered with" in self.special_notes:
+            priority -= 10
+        elif self.special_notes == "Can only be on truck 2":
+            priority -= 10
 
         return priority + cities[self.city]
 
