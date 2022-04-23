@@ -22,4 +22,5 @@ class Driver:
         for truck in trucks:
             if truck.driver is None:
                 self.current_truck = truck
+                truck.driver = self
                 break
