@@ -34,6 +34,10 @@ class Application:
         self.load_packages()
         self.load_trucks()
         self.load_distances()
+        for truck in self.trucks:
+            truck.delivery_graph = self.filter_truck_graph(truck)
+            truck.determine_path()
+
         self.deliver_packages()
         self.cli()
 
@@ -116,12 +120,29 @@ class Application:
         for driver in self.drivers:
             driver.select_truck(self.trucks)
 
-        packages_not_delivered: bool = True
-        while packages_not_delivered:
+        # trucks_finished: int = 0
+        # while trucks_finished != NUMBER_OF_TRUCKS:
+        #     for truck in self.trucks:
+        #         if truck.driver is not None:
+        #             if (len(truck.delivery_path)) != 0:
+        #                 truck.go_to_next_node(truck.delivery_path.pop(0))
+        #             if len(truck.packages) == 0:
+        #                 trucks_finished += 1
+        #                 truck.driver.select_truck(self.trucks)
+        #                 truck.driver = None
+
+    # FIXME - fix the truck delivery loop
+        trucks_returned: int = 0
+        while trucks_returned < NUMBER_OF_TRUCKS:
             for truck in self.trucks:
-                if truck.driver:
-                    # TODO - REWORD go_to_next_node method to not require the passing of the current edge
-                    truck.go_to_next_node()
+                if truck.driver is not None:
+                    truck.deliver_package()
+                    if len(truck.delivery_path) > 1:
+                        truck.go_to_next_node(truck.delivery_path.pop(0))
+                        if truck.returned:
+                            trucks_returned += 1
+                            truck.driver.select_truck(self.trucks)
+                            truck.driver = None
 
     def cli(self):
         user_hour: int = 0
@@ -148,12 +169,11 @@ class Application:
         user_time: datetime = datetime(datetime.now().year, datetime.now().month, datetime.now().day, user_hour,
                                        user_minute)
 
-        print("\nTime entered: ", user_time)
+        print(f"\nTime entered: {user_time}")
         for package_id in range(self.packages.table_items):
             package_status: str = "Not Delivered"
             package: "Package" = self.packages.lookup(package_id + 1)
-            if package.delivered_time and \
-                    package.delivered_time < user_time:
+            if package.delivered_time and package.delivered_time < user_time:
                 package_status = "Delivered"
             print(package.package_id, package_status)
 
