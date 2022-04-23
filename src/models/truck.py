@@ -18,11 +18,11 @@ class Truck:
         self.driver: Optional[Driver] = None
         self.capacity: int = MAX_CAPACITY
         self.packages: list[Package] = []
-        self.avg_speed: int = AVG_SPEED
         self.distance_traveled: float = 0.0
         self.current_address: str = "HUB"
         self.delivery_graph: Optional[Graph] = None
         self.delivery_path: list["Edge"] = []
+        self.returned: bool = False
 
     def __repr__(self) -> str:
         return f"Truck ID: {self.truck_id}, Current Driver: {self.driver.driver_id}, Packages Loaded: {self.packages}"
@@ -64,18 +64,18 @@ class Truck:
         path.append(curr_node.edges[0])
         self.delivery_path = path
 
-    def go_to_next_node(self, current_edge: "Edge") -> list["Package"]:
+    def go_to_next_node(self, current_edge: "Edge") -> None:
         if current_edge.origin.node_address == self.current_address:
-            self.current_address = current_edge.origin.node_address
-        else:
             self.current_address = current_edge.destination.node_address
+        else:
+            self.current_address = current_edge.origin.node_address
         self.distance_traveled += current_edge.distance
-        return self.deliver_package()
 
-    def deliver_package(self) -> list["Package"]:
-        matching_packages: list[Package] = []
+        if self.current_address == "HUB":
+            self.returned = True
+
+    def deliver_package(self) -> None:
         for index, package in enumerate(self.packages):
             if package.address == self.current_address:
                 package.delivered_time = self.driver.current_time
-                matching_packages.append(self.packages.pop(index))
-        return matching_packages
+                self.packages.pop(index)
