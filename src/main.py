@@ -157,7 +157,7 @@ class Application:
         while True:
             try:
                 user_second = int(input("Enter the second you would like to check: "))
-                if user_minute < 0 or user_minute > 60:
+                if user_second < 0 or user_second > 60:
                     raise ValueError()
                 break
             except ValueError:
