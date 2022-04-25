@@ -89,12 +89,10 @@ class Application:
         package_addresses: list[str] = [p.address for p in truck.packages]
         package_nodes: HashTable = HashTable(40)
         temp_nodes: list["Node"] = []
-        i = 1
         for node in self.nodes:
             address: str = node.node_address
             if address in package_addresses or address == "HUB":
                 package_nodes.insert(address, node)
-                i += 1
                 temp_nodes.append(node)
 
         filtered_edges: HashTable = HashTable(40)
@@ -120,29 +118,21 @@ class Application:
         for driver in self.drivers:
             driver.select_truck(self.trucks)
 
-        # trucks_finished: int = 0
-        # while trucks_finished != NUMBER_OF_TRUCKS:
-        #     for truck in self.trucks:
-        #         if truck.driver is not None:
-        #             if (len(truck.delivery_path)) != 0:
-        #                 truck.go_to_next_node(truck.delivery_path.pop(0))
-        #             if len(truck.packages) == 0:
-        #                 trucks_finished += 1
-        #                 truck.driver.select_truck(self.trucks)
-        #                 truck.driver = None
-
-    # FIXME - fix the truck delivery loop
+        # TODO - Continue working on delivery loop
         trucks_returned: int = 0
-        while trucks_returned < NUMBER_OF_TRUCKS:
+        while trucks_returned < 1:
             for truck in self.trucks:
                 if truck.driver is not None:
+                    truck.go_to_next_node(truck.delivery_path.pop(0))
+                    if len(truck.delivery_path) == 0:
+                        truck.returned = True
                     truck.deliver_package()
-                    if len(truck.delivery_path) > 1:
-                        truck.go_to_next_node(truck.delivery_path.pop(0))
-                        if truck.returned:
-                            trucks_returned += 1
-                            truck.driver.select_truck(self.trucks)
-                            truck.driver = None
+
+                    if truck.returned:
+                        # FIXME - fix driver switching trucks
+                        trucks_returned += 1
+                        truck.driver.select_truck(self.trucks)
+                        truck.driver = None
 
     def cli(self):
         user_hour: int = 0
