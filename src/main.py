@@ -3,7 +3,7 @@ First
 Last
 ID
 """
-from datetime import datetime, timedelta
+from datetime import datetime
 from csv import reader
 from models.package import Package
 from models.hash_table import HashTable
@@ -15,10 +15,12 @@ from models.driver import Driver
 
 NUMBER_OF_TRUCKS: int = 3
 NUMBER_OF_DRIVERS: int = 2
-FLIGHT_HOUR: int = 9
-FLIGHT_MINUTE: int = 5
+FLIGHT_ARRIVED: datetime = datetime.now().replace(hour=9, minute=5)
+PACKAGE_ADDRESS_CORRECTED: datetime = datetime.now().replace(hour=10, minute=20)
 INFO_UPDATE_HOUR: int = 10
 INFO_UPDATE_MINUTE: int = 20
+CORRECT_PACKAGE_ADDRESS: str = "410 South State St"
+CORRECT_PACKAGE_ZIP: int = 84111
 
 
 class Application:
@@ -37,7 +39,8 @@ class Application:
         for truck in self.trucks:
             truck.delivery_graph = self.filter_truck_graph(truck)
             truck.determine_path()
-
+            print(truck.delivery_path)
+            print(truck.packages, "\n")
         self.deliver_packages()
         self.cli()
 
@@ -51,17 +54,17 @@ class Application:
 
     def load_trucks(self) -> None:
         packages: list["Package"] = []
-        special_packages: list["Package"] = []
+        pre_loaded_packages: list[int] = [3, 18, 36, 38]
+
         for i in range(self.packages.table_items):
             package: "Package" = self.packages.lookup(i + 1)
-            if package.special_notes == "" and package.delivery_deadline is None:
+            if package.package_id not in pre_loaded_packages:
                 packages.append(package)
-            else:
-                special_packages.append(package)
+
+        for package_id in pre_loaded_packages:
+            self.trucks[1].load_package(self.packages.lookup(package_id))
 
         packages.sort(key=lambda x: x.priority)
-        special_packages.sort(key=lambda x: x.priority)
-        packages += special_packages
         truck_index: int = 0
         for package in packages:
             self.trucks[truck_index].load_package(package)
@@ -92,6 +95,7 @@ class Application:
         for node in self.nodes:
             address: str = node.node_address
             if address in package_addresses or address == "HUB":
+                node.calculate_priority(truck.packages)
                 package_nodes.insert(address, node)
                 temp_nodes.append(node)
 
@@ -100,7 +104,7 @@ class Application:
             if edge.eligible(temp_nodes):
                 origin: str = edge.origin.node_address
                 destination: str = edge.destination.node_address
-                edge.calculate_priority(truck.packages)
+                edge.calculate_priority()
                 filtered_edges.insert((origin, destination), edge)
 
         return Graph(package_nodes, filtered_edges)
@@ -110,33 +114,28 @@ class Application:
         truck.determine_path()
 
     def deliver_packages(self):
-        flight_arrived: datetime = datetime(datetime.now().year, datetime.now().month, datetime.now().day, FLIGHT_HOUR,
-                                            FLIGHT_MINUTE)
-        package_info_updated: datetime = datetime(datetime.now().year, datetime.now().month, datetime.now().day,
-                                                  INFO_UPDATE_HOUR, INFO_UPDATE_MINUTE)
-
         for driver in self.drivers:
             driver.select_truck(self.trucks)
 
-        # TODO - Continue working on delivery loop
         trucks_returned: int = 0
-        while trucks_returned < 1:
+        while trucks_returned < NUMBER_OF_TRUCKS:
             for truck in self.trucks:
-                if truck.driver is not None:
-                    truck.go_to_next_node(truck.delivery_path.pop(0))
-                    if len(truck.delivery_path) == 0:
-                        truck.returned = True
-                    truck.deliver_package()
+                if truck.driver is None:
+                    continue
 
-                    if truck.returned:
-                        # FIXME - fix driver switching trucks
-                        trucks_returned += 1
-                        truck.driver.select_truck(self.trucks)
-                        truck.driver = None
+                truck.go_to_next_node(truck.delivery_path.pop(0))
+                if len(truck.delivery_path) > 0:
+                    truck.deliver_package()
+                else:
+                    trucks_returned += 1
+                    truck.returned = True
+                    truck.driver.select_truck(self.trucks)
+                    truck.driver = None
 
     def cli(self):
         user_hour: int = 0
         user_minute: int = 0
+        user_second: int = 0
         while True:
             try:
                 user_hour = int(input("Enter the hour you would like to check: "))
@@ -145,25 +144,37 @@ class Application:
                 break
             except ValueError:
                 print("Please input an integer between 8 and 24")
-                continue
 
         while True:
             try:
-                user_minute: int = int(input("Enter the minute you would like to check: "))
+                user_minute = int(input("Enter the minute you would like to check: "))
                 if user_minute < 0 or user_minute > 60:
                     raise ValueError()
                 break
             except ValueError:
                 print("Please input an integer between 0 and 60")
 
-        user_time: datetime = datetime(datetime.now().year, datetime.now().month, datetime.now().day, user_hour,
-                                       user_minute)
+        while True:
+            try:
+                user_second = int(input("Enter the second you would like to check: "))
+                if user_minute < 0 or user_minute > 60:
+                    raise ValueError()
+                break
+            except ValueError:
+                print("Please input an integer between 0 and 60")
+
+        user_time: datetime = datetime.now().replace(
+            hour=user_hour,
+            minute=user_minute,
+            second=user_second,
+            microsecond=0
+        )
 
         print(f"\nTime entered: {user_time}")
         for package_id in range(self.packages.table_items):
             package_status: str = "Not Delivered"
             package: "Package" = self.packages.lookup(package_id + 1)
-            if package.delivered_time and package.delivered_time < user_time:
+            if package.delivered_time < user_time:
                 package_status = "Delivered"
             print(package.package_id, package_status)
 
