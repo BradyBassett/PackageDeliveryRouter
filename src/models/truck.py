@@ -71,11 +71,13 @@ class Truck:
             self.current_address = current_edge.origin.node_address
         self.distance_traveled += current_edge.distance
 
-        if self.current_address == "HUB":
-            self.returned = True
-
     def deliver_package(self) -> None:
-        for index, package in enumerate(self.packages):
+        matching_packages: list["Package"] = []
+        for package in self.packages:
             if package.address == self.current_address:
                 package.delivered_time = self.driver.current_time
-                self.packages.pop(index)
+                matching_packages.append(package)
+
+        for package in matching_packages:
+            if package in self.packages:
+                self.packages.remove(package)
