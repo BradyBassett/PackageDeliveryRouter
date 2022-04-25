@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
-import sys
 if TYPE_CHECKING:
     from edge import Edge
+    from package import Package
 
 
 class Node:
@@ -11,20 +11,16 @@ class Node:
         self.node_address: str = node_address
         self.node_zipcode: str = node_zipcode
         self.edges: list["Edge"] = []
-        self.cost: float = sys.maxsize
+        self.priority: float = 0
         self.prev_nodes: list[Node] = []
 
     def __repr__(self) -> str:
         return f"{self.node_id}, {self.node_name}"
 
-    def __hash__(self):
-        return id(self)
-
-    def __eq__(self, other: "Node"):
-        return self.node_id == other.node_id
-
-    def __lt__(self, other: "Node"):
-        return self.cost < other.cost
-
     def add_edge(self, edge: "Edge") -> None:
         self.edges.append(edge)
+
+    def calculate_priority(self, packages: list["Package"]) -> None:
+        for package in packages:
+            if package.address == self.node_address:
+                self.priority += package.priority
