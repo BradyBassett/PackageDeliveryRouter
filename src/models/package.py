@@ -21,32 +21,30 @@ class Package:
         return f"\n{self.package_id}, {self.address}, {self.city}, {self.state}, {self.zipcode}, {self.priority}, " \
                f"{self.delivery_deadline}, {self.special_notes}"
 
+    # TODO - Continue to optimize package priorities
     def calculate_priority(self) -> int:
         priority: int = 0
 
         cities = {
-            "Salt Lake City": 8,
-            "West Valley City": 6,
-            "Millcreek": 4,
-            "Holladay": 2,
-            "Murray": 0
+            "Salt Lake City": 10,
+            "Millcreek": 15,
+            "West Valley City": 20,
+            "Holladay": 25,
+            "Murray": 30
         }
 
         if self.delivery_deadline is not None:
             priority -= 5
 
         if self.package_id in [13, 15, 19]:
-            priority = -8
-            self.special_notes = " "
+            priority -= 20
 
         if self.special_notes == "Delayed on flight---will not arrive to depot until 9:05 am":
-            priority += 8
+            priority += 200
         elif self.special_notes == "Wrong address listed":
-            priority += 6
+            priority += 250
         elif "Must be delivered with" in self.special_notes:
-            priority -= 10
-        elif self.special_notes == "Can only be on truck 2":
-            priority -= 10
+            priority -= 20
 
         return priority + cities[self.city]
 
@@ -59,4 +57,4 @@ def get_deadline(deadline: str) -> Optional[datetime]:
     if temp[2] == "PM":
         temp[0] += 12
 
-    return datetime(datetime.now().year, datetime.now().month, datetime.now().day, int(temp[0]), int(temp[1]))
+    return datetime.now().replace(hour=int(temp[0]), minute=int(temp[1]), second=0, microsecond=0)
