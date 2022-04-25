@@ -40,9 +40,9 @@ class Package:
             priority -= 20
 
         if self.special_notes == "Delayed on flight---will not arrive to depot until 9:05 am":
-            priority += 200
+            priority += 25
         elif self.special_notes == "Wrong address listed":
-            priority += 250
+            priority += 35
         elif "Must be delivered with" in self.special_notes:
             priority -= 20
 
