@@ -1,4 +1,6 @@
+import math
 import sys
+from datetime import timedelta
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
@@ -70,6 +72,17 @@ class Truck:
         else:
             self.current_address = current_edge.origin.node_address
         self.distance_traveled += current_edge.distance
+
+        travel_time: float = current_edge.distance / AVG_SPEED
+        travel_time_hour: int = int(travel_time)
+        travel_time_minute: int = int(travel_time * 60 - (travel_time_hour * 60))
+        travel_time_second: int = \
+            int(travel_time * math.pow(60, 2) - (travel_time_minute * 60) - (travel_time_hour * 60))
+        self.driver.current_time += timedelta(
+            hours=travel_time_hour,
+            minutes=travel_time_minute,
+            seconds=travel_time_second
+        )
 
     def deliver_package(self) -> None:
         matching_packages: list["Package"] = []
