@@ -24,7 +24,7 @@ class Truck:
         self.current_address: str = "HUB"
         self.delivery_graph: Optional[Graph] = None
         self.delivery_path: list["Edge"] = []
-        self.returned: bool = False
+        self.delivering: bool = False
 
     def __repr__(self) -> str:
         return f"Truck ID: {self.truck_id}, Current Driver: {self.driver.driver_id}, Packages Loaded: {self.packages}"
@@ -92,5 +92,4 @@ class Truck:
                 matching_packages.append(package)
 
         for package in matching_packages:
-            if package in self.packages:
-                self.packages.remove(package)
+            self.packages.remove(package)
