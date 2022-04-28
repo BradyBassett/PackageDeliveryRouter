@@ -17,15 +17,13 @@ NUMBER_OF_TRUCKS: int = 3
 NUMBER_OF_DRIVERS: int = 2
 FLIGHT_ARRIVED: datetime = datetime.now().replace(hour=9, minute=5)
 PACKAGE_ADDRESS_CORRECTED: datetime = datetime.now().replace(hour=10, minute=20)
-INFO_UPDATE_HOUR: int = 10
-INFO_UPDATE_MINUTE: int = 20
-CORRECT_PACKAGE_ADDRESS: str = "410 South State St"
-CORRECT_PACKAGE_ZIP: int = 84111
+CORRECT_PACKAGE_ADDRESS: tuple[str, int] = ("410 South State St", 84111)
 
 
 class Application:
     def __init__(self) -> None:
         self.packages: HashTable = HashTable()
+        self.delayed_packages: list[int] = [6, 9, 25, 28, 32]
         self.graph: Graph = Graph()
         self.nodes: list["Node"] = []
         self.edges: list["Edge"] = []
@@ -36,11 +34,6 @@ class Application:
         self.load_packages()
         self.load_trucks()
         self.load_distances()
-        for truck in self.trucks:
-            truck.delivery_graph = self.filter_truck_graph(truck)
-            truck.determine_path()
-            print(truck.delivery_path)
-            print(truck.packages, "\n")
         self.deliver_packages()
         self.cli()
 
@@ -58,7 +51,7 @@ class Application:
 
         for i in range(self.packages.table_items):
             package: "Package" = self.packages.lookup(i + 1)
-            if package.package_id not in pre_loaded_packages:
+            if package.package_id not in pre_loaded_packages and package.package_id not in self.delayed_packages:
                 packages.append(package)
 
         for package_id in pre_loaded_packages:
@@ -116,6 +109,10 @@ class Application:
     def deliver_packages(self):
         for driver in self.drivers:
             driver.select_truck(self.trucks)
+            if driver.current_truck:
+                driver.current_truck.delivery_graph = self.filter_truck_graph(driver.current_truck)
+                driver.current_truck.determine_path()
+                driver.current_truck.delivering = True
 
         trucks_returned: int = 0
         while trucks_returned < NUMBER_OF_TRUCKS:
@@ -128,17 +125,31 @@ class Application:
                     truck.deliver_package()
                 else:
                     trucks_returned += 1
-                    truck.returned = True
                     truck.driver.select_truck(self.trucks)
+                    truck.delivering = False
+                    newly_loaded_packages: list["Package"] = []
+                    for package_id in self.delayed_packages:
+                        package: "Package" = self.packages.lookup(package_id)
+                        if package.special_notes == "Delayed on flight---will not arrive to depot until 9:05 am":
+                            if truck.driver.current_time >= FLIGHT_ARRIVED:
+                                truck.driver.current_truck.load_package(package)
+                                newly_loaded_packages.append(package)
+                        elif package.special_notes == "Wrong address listed":
+                            if truck.driver.current_time >= PACKAGE_ADDRESS_CORRECTED:
+                                package.address = CORRECT_PACKAGE_ADDRESS[0]
+                                package.zipcode = CORRECT_PACKAGE_ADDRESS[1]
+                                truck.driver.current_truck.load_package(package)
+                                newly_loaded_packages.append(package)
+                    for package in newly_loaded_packages:
+                        self.delayed_packages.remove(package.package_id)
+                    truck.driver.current_truck.delivery_graph = self.filter_truck_graph(truck.driver.current_truck)
+                    truck.driver.current_truck.determine_path()
                     truck.driver = None
 
     def cli(self):
-        user_hour: int = 0
-        user_minute: int = 0
-        user_second: int = 0
         while True:
             try:
-                user_hour = int(input("Enter the hour you would like to check: "))
+                user_hour: int = int(input("Enter the hour you would like to check: "))
                 if user_hour < 8 or user_hour > 24:
                     raise ValueError()
                 break
@@ -147,7 +158,7 @@ class Application:
 
         while True:
             try:
-                user_minute = int(input("Enter the minute you would like to check: "))
+                user_minute: int = int(input("Enter the minute you would like to check: "))
                 if user_minute < 0 or user_minute > 60:
                     raise ValueError()
                 break
@@ -156,7 +167,7 @@ class Application:
 
         while True:
             try:
-                user_second = int(input("Enter the second you would like to check: "))
+                user_second: int = int(input("Enter the second you would like to check: "))
                 if user_second < 0 or user_second > 60:
                     raise ValueError()
                 break
@@ -174,7 +185,7 @@ class Application:
         for package_id in range(self.packages.table_items):
             package_status: str = "Not Delivered"
             package: "Package" = self.packages.lookup(package_id + 1)
-            if package.delivered_time < user_time:
+            if package.delivered_time and package.delivered_time < user_time:
                 package_status = "Delivered"
             print(package.package_id, package_status)
 
