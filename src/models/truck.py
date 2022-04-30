@@ -84,7 +84,7 @@ class Truck:
             seconds=travel_time_second
         )
 
-    def deliver_package(self) -> None:
+    def deliver_package(self) -> int:
         matching_packages: list["Package"] = []
         for package in self.packages:
             if package.address == self.current_address:
@@ -93,3 +93,5 @@ class Truck:
 
         for package in matching_packages:
             self.packages.remove(package)
+
+        return len(matching_packages)
