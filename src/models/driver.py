@@ -17,7 +17,7 @@ class Driver:
     def __repr__(self) -> str:
         return f"Driver ID: {self.driver_id}, Current Truck: {self.current_truck.truck_id}"
 
-    def select_truck(self, trucks: list["Truck"]):
+    def select_truck(self, trucks: list["Truck"]) -> None:
         for truck in trucks:
             if truck.driver is None and truck.delivering is False:
                 self.current_truck = truck
