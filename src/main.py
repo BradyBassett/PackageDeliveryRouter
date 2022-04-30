@@ -114,17 +114,16 @@ class Application:
                 driver.current_truck.determine_path()
                 driver.current_truck.delivering = True
 
-        trucks_returned: int = 0
-        while trucks_returned < NUMBER_OF_TRUCKS:
+        packages_delivered: int = 0
+        while packages_delivered < self.packages.table_items:
             for truck in self.trucks:
                 if truck.driver is None:
                     continue
 
                 truck.go_to_next_node(truck.delivery_path.pop(0))
                 if len(truck.delivery_path) > 0:
-                    truck.deliver_package()
+                    packages_delivered += truck.deliver_package()
                 else:
-                    trucks_returned += 1
                     truck.driver.select_truck(self.trucks)
                     truck.delivering = False
                     newly_loaded_packages: list["Package"] = []
@@ -150,29 +149,29 @@ class Application:
         while True:
             try:
                 user_hour: int = int(input("Enter the hour you would like to check: "))
-                if user_hour < 8 or user_hour > 24:
+                if user_hour < 8 or user_hour > 23:
                     raise ValueError()
                 break
             except ValueError:
-                print("Please input an integer between 8 and 24")
+                print("Please input an integer between 8 and 23")
 
         while True:
             try:
                 user_minute: int = int(input("Enter the minute you would like to check: "))
-                if user_minute < 0 or user_minute > 60:
+                if user_minute < 0 or user_minute > 59:
                     raise ValueError()
                 break
             except ValueError:
-                print("Please input an integer between 0 and 60")
+                print("Please input an integer between 0 and 59")
 
         while True:
             try:
                 user_second: int = int(input("Enter the second you would like to check: "))
-                if user_second < 0 or user_second > 60:
+                if user_second < 0 or user_second > 59:
                     raise ValueError()
                 break
             except ValueError:
-                print("Please input an integer between 0 and 60")
+                print("Please input an integer between 0 and 59")
 
         user_time: datetime = datetime.now().replace(
             hour=user_hour,
