@@ -19,7 +19,7 @@ class Driver:
 
     def select_truck(self, trucks: list["Truck"]) -> None:
         for truck in trucks:
-            if truck.driver is None and truck.delivering is False:
+            if truck.driver is None and truck.returned is True:
                 self.current_truck = truck
                 truck.driver = self
                 break

@@ -34,13 +34,13 @@ class Package:
         }
 
         if self.delivery_deadline is not None:
-            priority -= 5
+            priority -= 20
 
         if self.package_id in [13, 15, 19]:
             priority -= 20
 
-        if self.special_notes == "Delayed on flight---will not arrive to depot until 9:05 am":
-            priority += 25
+        # if self.special_notes == "Delayed on flight---will not arrive to depot until 9:05 am":
+        #     priority += 25
         elif self.special_notes == "Wrong address listed":
             priority += 35
         elif "Must be delivered with" in self.special_notes:

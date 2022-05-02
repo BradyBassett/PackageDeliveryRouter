@@ -23,7 +23,6 @@ CORRECT_PACKAGE_ADDRESS: tuple[str, int] = ("410 South State St", 84111)
 class Application:
     def __init__(self) -> None:
         self.packages: HashTable = HashTable()
-        self.delayed_packages: list[int] = [6, 9, 25, 28, 32]
         self.graph: Graph = Graph()
         self.nodes: list["Node"] = []
         self.edges: list["Edge"] = []
@@ -33,6 +32,8 @@ class Application:
     def start(self) -> None:
         self.load_packages()
         self.load_trucks()
+        for truck in self.trucks:
+            print(truck.packages)
         self.load_distances()
         self.deliver_packages()
         self.cli()
@@ -47,15 +48,18 @@ class Application:
 
     def load_trucks(self) -> None:
         packages: list["Package"] = []
-        pre_loaded_packages: list[int] = [3, 18, 36, 38]
-
+        self.trucks[1].delayed = True
         for i in range(self.packages.table_items):
             package: "Package" = self.packages.lookup(i + 1)
-            if package.package_id not in pre_loaded_packages and package.package_id not in self.delayed_packages:
+            if package.special_notes == "Delayed on flight---will not arrive to depot until 9:05 am" \
+                    or package.special_notes == "Wrong address listed" \
+                    or package.special_notes == "Can only be on truck 2":
+                if package.special_notes == "Wrong address listed":
+                    package.address = CORRECT_PACKAGE_ADDRESS[0]
+                    package.zipcode = CORRECT_PACKAGE_ADDRESS[1]
+                self.trucks[1].load_package(package)
+            else:
                 packages.append(package)
-
-        for package_id in pre_loaded_packages:
-            self.trucks[1].load_package(self.packages.lookup(package_id))
 
         packages.sort(key=lambda x: x.priority)
         truck_index: int = 0
@@ -107,12 +111,15 @@ class Application:
         truck.determine_path()
 
     def deliver_packages(self):
-        for driver in self.drivers:
-            driver.select_truck(self.trucks)
-            if driver.current_truck:
-                driver.current_truck.delivery_graph = self.filter_truck_graph(driver.current_truck)
-                driver.current_truck.determine_path()
-                driver.current_truck.delivering = True
+        self.drivers[0].current_truck = self.trucks[0]
+        self.drivers[0].current_truck.delivery_graph = self.filter_truck_graph(self.trucks[0])
+        self.drivers[0].current_truck.determine_path()
+        self.drivers[0].current_truck.returned = False
+        self.drivers[1].current_truck = self.trucks[1]
+        self.drivers[1].current_time = FLIGHT_ARRIVED
+        self.drivers[1].current_truck.delivery_graph = self.filter_truck_graph(self.trucks[1])
+        self.drivers[1].current_truck.determine_path()
+        self.drivers[1].current_truck.returned = False
 
         packages_delivered: int = 0
         while packages_delivered < self.packages.table_items:
@@ -125,22 +132,7 @@ class Application:
                     packages_delivered += truck.deliver_package()
                 else:
                     truck.driver.select_truck(self.trucks)
-                    truck.delivering = False
-                    newly_loaded_packages: list["Package"] = []
-                    for package_id in self.delayed_packages:
-                        package: "Package" = self.packages.lookup(package_id)
-                        if package.special_notes == "Delayed on flight---will not arrive to depot until 9:05 am":
-                            if truck.driver.current_time >= FLIGHT_ARRIVED:
-                                truck.driver.current_truck.load_package(package)
-                                newly_loaded_packages.append(package)
-                        elif package.special_notes == "Wrong address listed":
-                            if truck.driver.current_time >= PACKAGE_ADDRESS_CORRECTED:
-                                package.address = CORRECT_PACKAGE_ADDRESS[0]
-                                package.zipcode = CORRECT_PACKAGE_ADDRESS[1]
-                                truck.driver.current_truck.load_package(package)
-                                newly_loaded_packages.append(package)
-                    for package in newly_loaded_packages:
-                        self.delayed_packages.remove(package.package_id)
+                    truck.returned = True
                     truck.driver.current_truck.delivery_graph = self.filter_truck_graph(truck.driver.current_truck)
                     truck.driver.current_truck.determine_path()
                     truck.driver = None

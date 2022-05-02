@@ -24,7 +24,7 @@ class Truck:
         self.current_address: str = "HUB"
         self.delivery_graph: Optional[Graph] = None
         self.delivery_path: list["Edge"] = []
-        self.delivering: bool = False
+        self.returned: bool = True
 
     def __repr__(self) -> str:
         return f"Truck ID: {self.truck_id}, Current Driver: {self.driver.driver_id}, Packages Loaded: {self.packages}"
