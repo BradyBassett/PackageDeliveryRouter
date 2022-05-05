@@ -12,7 +12,9 @@ class Node:
         self.node_zipcode: str = node_zipcode
         self.edges: list["Edge"] = []
         self.priority: float = 0
-        self.prev_nodes: list[Node] = []
+        self.children: list["Node"] = []
+        self.parent_distance: int = 0
+        self.visited: bool = False
 
     def __repr__(self) -> str:
         return f"{self.node_id}, {self.node_name}"
