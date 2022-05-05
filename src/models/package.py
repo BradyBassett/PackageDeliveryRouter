@@ -16,6 +16,7 @@ class Package:
         self.special_notes: str = special_notes
         self.priority: int = self.calculate_priority()
         self.delivered_time: Optional[datetime] = None
+        self.delivery_status: str = "At the hub"
 
     def __repr__(self) -> str:
         return f"\n{self.package_id}, {self.address}, {self.city}, {self.state}, {self.zipcode}, {self.priority}, " \
@@ -27,23 +28,13 @@ class Package:
 
         cities = {
             "Salt Lake City": 0,
-            "Millcreek": 5,
-            "West Valley City": 10,
-            "Holladay": 12.5,
-            "Murray": 15
+            "Millcreek": 10,
+            "West Valley City": 20,
+            "Holladay": 30,
+            "Murray": 40
         }
 
         if self.delivery_deadline is not None:
-            priority -= 20
-
-        if self.package_id in [13, 15, 19]:
-            priority -= 20
-
-        # if self.special_notes == "Delayed on flight---will not arrive to depot until 9:05 am":
-        #     priority += 25
-        elif self.special_notes == "Wrong address listed":
-            priority += 35
-        elif "Must be delivered with" in self.special_notes:
             priority -= 20
 
         return priority + cities[self.city]
