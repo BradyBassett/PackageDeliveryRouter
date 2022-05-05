@@ -15,6 +15,9 @@ class Edge:
     def __repr__(self) -> str:
         return f"{self.origin.node_address} -> {self.distance} -> {self.destination.node_address}"
 
+    def __lt__(self, other: "Edge"):
+        return self.priority < other.priority
+
     def eligible(self, nodes: list["Node"]) -> bool:
         # Intended to check a group of nodes and see if any of them are present within the current edge to filter
         # out all nodes that aren't needed to be checked for the current trucks route
