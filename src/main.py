@@ -15,8 +15,8 @@ from models.driver import Driver
 
 NUMBER_OF_TRUCKS: int = 3
 NUMBER_OF_DRIVERS: int = 2
-FLIGHT_ARRIVED: datetime = datetime.now().replace(hour=9, minute=5)
-PACKAGE_ADDRESS_CORRECTED: datetime = datetime.now().replace(hour=10, minute=20)
+FLIGHT_ARRIVED: datetime = datetime.now().replace(hour=9, minute=5, second=0, microsecond=0)
+PACKAGE_ADDRESS_CORRECTED: datetime = datetime.now().replace(hour=10, minute=20, second=0, microsecond=0)
 CORRECT_PACKAGE_ADDRESS: tuple[str, int] = ("410 South State St", 84111)
 
 
@@ -24,16 +24,12 @@ class Application:
     def __init__(self) -> None:
         self.packages: HashTable = HashTable()
         self.graph: Graph = Graph()
-        self.nodes: list["Node"] = []
-        self.edges: list["Edge"] = []
         self.trucks: list[Truck] = [Truck(i + 1) for i in range(NUMBER_OF_TRUCKS)]
         self.drivers: list[Driver] = [Driver(i + 1) for i in range(NUMBER_OF_DRIVERS)]
 
     def start(self) -> None:
         self.load_packages()
         self.load_trucks()
-        for truck in self.trucks:
-            print(truck.packages)
         self.load_distances()
         self.deliver_packages()
         self.cli()
@@ -48,25 +44,25 @@ class Application:
 
     def load_trucks(self) -> None:
         packages: list["Package"] = []
-        self.trucks[1].delayed = True
-        for i in range(self.packages.table_items):
-            package: "Package" = self.packages.lookup(i + 1)
-            if package.special_notes == "Delayed on flight---will not arrive to depot until 9:05 am" \
-                    or package.special_notes == "Wrong address listed" \
-                    or package.special_notes == "Can only be on truck 2":
-                if package.special_notes == "Wrong address listed":
-                    package.address = CORRECT_PACKAGE_ADDRESS[0]
-                    package.zipcode = CORRECT_PACKAGE_ADDRESS[1]
-                self.trucks[1].load_package(package)
-            else:
-                packages.append(package)
 
-        packages.sort(key=lambda x: x.priority)
+        for package_id in range(self.packages.table_items):
+            package: "Package" = self.packages.lookup(package_id + 1)
+            if package.special_notes == "":
+                if package.delivery_deadline or package.package_id in [13, 14, 15, 16, 19, 20]:
+                    self.trucks[0].load_package(package)
+                else:
+                    packages.append(package)
+            else:
+                if "Must be delivered with" in package.special_notes:
+                    self.trucks[0].load_package(package)
+                else:
+                    self.trucks[1].load_package(package)
+
         truck_index: int = 0
         for package in packages:
-            self.trucks[truck_index].load_package(package)
-            if self.trucks[truck_index].get_total_packages() == self.trucks[truck_index].capacity:
+            if len(self.trucks[truck_index].packages) >= self.trucks[truck_index].capacity:
                 truck_index += 1
+            self.trucks[truck_index].load_package(package)
 
     def load_distances(self) -> None:
         with open("data/addresses.csv") as file:
@@ -74,66 +70,46 @@ class Application:
             for row in file_data:
                 node: "Node" = Node(int(row[0]), row[1], row[2], row[3])
                 self.graph.add_node(node)
-                self.nodes.append(node)
 
         with open("data/distances.csv") as file:
             file_data: reader = reader(file)
             for i, row in enumerate(file_data):
                 for j in range(i):
                     if i is not j:
-                        edge: "Edge" = Edge(self.nodes[j], self.nodes[i], float(row[j]))
+                        edge: "Edge" = Edge(self.graph.nodes_list[j], self.graph.nodes_list[i], float(row[j]))
                         self.graph.add_edge(edge)
-                        self.edges.append(edge)
-
-    def filter_truck_graph(self, truck: "Truck") -> Graph:
-        package_addresses: list[str] = [p.address for p in truck.packages]
-        package_nodes: HashTable = HashTable(40)
-        temp_nodes: list["Node"] = []
-        for node in self.nodes:
-            address: str = node.node_address
-            if address in package_addresses or address == "HUB":
-                node.calculate_priority(truck.packages)
-                package_nodes.insert(address, node)
-                temp_nodes.append(node)
-
-        filtered_edges: HashTable = HashTable(40)
-        for edge in self.edges:
-            if edge.eligible(temp_nodes):
-                origin: str = edge.origin.node_address
-                destination: str = edge.destination.node_address
-                edge.calculate_priority()
-                filtered_edges.insert((origin, destination), edge)
-
-        return Graph(package_nodes, filtered_edges)
-
-    def get_truck_path(self, truck: "Truck"):
-        truck.delivery_graph = self.filter_truck_graph(truck)
-        truck.determine_path()
 
     def deliver_packages(self):
-        self.drivers[0].current_truck = self.trucks[0]
-        self.drivers[0].current_truck.delivery_graph = self.filter_truck_graph(self.trucks[0])
-        self.drivers[0].current_truck.determine_path()
-        self.drivers[0].current_truck.returned = False
-        self.drivers[1].current_truck = self.trucks[1]
-        self.drivers[1].current_time = FLIGHT_ARRIVED
-        self.drivers[1].current_truck.delivery_graph = self.filter_truck_graph(self.trucks[1])
-        self.drivers[1].current_truck.determine_path()
-        self.drivers[1].current_truck.returned = False
+        for driver in self.drivers:
+            driver.select_truck(self.trucks)
+            if driver.current_truck.truck_id == 2:
+                driver.current_time = FLIGHT_ARRIVED
+            driver.current_truck.filter_truck_graph(self.graph)
+            driver.current_truck.determine_path()
 
         packages_delivered: int = 0
         while packages_delivered < self.packages.table_items:
             for truck in self.trucks:
-                if truck.driver is None:
+                if not truck.driver:
                     continue
 
-                truck.go_to_next_node(truck.delivery_path.pop(0))
+                if truck.truck_id == 2 and truck.driver.current_time >= PACKAGE_ADDRESS_CORRECTED:
+                    for package in truck.packages:
+                        if package.special_notes == "Wrong address listed":
+                            package.address = CORRECT_PACKAGE_ADDRESS[0]
+                            package.zipcode = CORRECT_PACKAGE_ADDRESS[1]
+                            break
+                    truck.filter_truck_graph(self.graph)
+                    truck.determine_path()
+
+                truck.go_to_next_node()
+
                 if len(truck.delivery_path) > 0:
                     packages_delivered += truck.deliver_package()
                 else:
                     truck.driver.select_truck(self.trucks)
                     truck.returned = True
-                    truck.driver.current_truck.delivery_graph = self.filter_truck_graph(truck.driver.current_truck)
+                    truck.driver.current_truck.filter_truck_graph(self.graph)
                     truck.driver.current_truck.determine_path()
                     truck.driver = None
 
@@ -174,11 +150,11 @@ class Application:
 
         print(f"\nTime entered: {user_time}")
         for package_id in range(self.packages.table_items):
-            package_status: str = "Not Delivered"
             package: "Package" = self.packages.lookup(package_id + 1)
+            # TODO - Correct package delivery status messages
             if package.delivered_time and package.delivered_time < user_time:
-                package_status = "Delivered"
-            print(package.package_id, package_status)
+                package.delivery_status = "Delivered"
+            print(package.package_id, package.delivery_status)
 
         distance: int = 0
         for truck in self.trucks:
