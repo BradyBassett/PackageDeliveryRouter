@@ -31,6 +31,7 @@ class Application:
         self.load_packages()
         self.load_trucks()
         self.load_distances()
+        self.load_initial_drivers()
         self.deliver_packages()
         self.cli()
 
@@ -79,14 +80,25 @@ class Application:
                         edge: "Edge" = Edge(self.graph.nodes_list[j], self.graph.nodes_list[i], float(row[j]))
                         self.graph.add_edge(edge)
 
-    def deliver_packages(self):
+    def load_initial_drivers(self):
         for driver in self.drivers:
             driver.select_truck(self.trucks)
             if driver.current_truck.truck_id == 2:
                 driver.current_time = FLIGHT_ARRIVED
             driver.current_truck.filter_truck_graph(self.graph)
             driver.current_truck.determine_path()
+            for package in driver.current_truck.packages:
+                package.departure_time = driver.current_time
 
+    def change_truck(self, truck: "Truck"):
+        truck.driver.select_truck(self.trucks)
+        truck.returned = True
+        truck.driver.current_truck.filter_truck_graph(self.graph)
+        truck.driver.current_truck.determine_path()
+        truck.driver.current_truck.departure_time = truck.driver.current_time
+        truck.driver = None
+
+    def deliver_packages(self):
         packages_delivered: int = 0
         while packages_delivered < self.packages.table_items:
             for truck in self.trucks:
@@ -107,11 +119,7 @@ class Application:
                 if len(truck.delivery_path) > 0:
                     packages_delivered += truck.deliver_package()
                 else:
-                    truck.driver.select_truck(self.trucks)
-                    truck.returned = True
-                    truck.driver.current_truck.filter_truck_graph(self.graph)
-                    truck.driver.current_truck.determine_path()
-                    truck.driver = None
+                    self.change_truck(truck)
 
     def cli(self):
         while True:
@@ -151,9 +159,11 @@ class Application:
         print(f"\nTime entered: {user_time}")
         for package_id in range(self.packages.table_items):
             package: "Package" = self.packages.lookup(package_id + 1)
-            # TODO - Correct package delivery status messages
+
             if package.delivered_time and package.delivered_time < user_time:
                 package.delivery_status = "Delivered"
+            elif package.departure_time and package.departure_time < user_time:
+                package.delivery_status = "En route"
             print(package.package_id, package.delivery_status)
 
         distance: int = 0
