@@ -1,6 +1,8 @@
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 import re
 from datetime import datetime
+if TYPE_CHECKING:
+    from truck import Truck
 
 
 class Package:
@@ -17,6 +19,7 @@ class Package:
         self.priority: int = self.calculate_priority()
         self.delivered_time: Optional[datetime] = None
         self.delivery_status: str = "At the hub"
+        self.departure_time: Optional[datetime] = None
 
     def __repr__(self) -> str:
         return f"\n{self.package_id}, {self.address}, {self.city}, {self.state}, {self.zipcode}, {self.priority}, " \
