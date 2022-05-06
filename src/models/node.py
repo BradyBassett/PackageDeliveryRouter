@@ -6,6 +6,10 @@ if TYPE_CHECKING:
 
 class Node:
     def __init__(self, node_id: int, node_name: str, node_address: str, node_zipcode: str) -> None:
+        """
+        Constructor method for initializing a new node object.
+        Space-time complexity: O(1)
+        """
         self.node_id: int = node_id
         self.node_name: str = node_name
         self.node_address: str = node_address
@@ -17,12 +21,24 @@ class Node:
         self.visited: bool = False
 
     def __repr__(self) -> str:
+        """
+        Repr method to display a node object
+        """
         return f"{self.node_id}, {self.node_name}"
 
     def add_edge(self, edge: "Edge") -> None:
+        """
+        Method that appends a new edge to the nods edges list
+        Space-time complexity: O(1)
+        """
         self.edges.append(edge)
 
     def calculate_priority(self, packages: list["Package"]) -> None:
+        """
+        Given a list of packages calculate the nodes priority based on the sum of all package priorities that match the
+        nodes address.
+        Space-time complexity: O(N)
+        """
         for package in packages:
             if package.address == self.node_address:
                 self.priority += package.priority

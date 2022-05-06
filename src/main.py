@@ -1,7 +1,5 @@
 """
-First
-Last
-ID
+
 """
 from datetime import datetime
 from csv import reader
@@ -22,20 +20,32 @@ CORRECT_PACKAGE_ADDRESS: tuple[str, int] = ("410 South State St", 84111)
 
 class Application:
     def __init__(self) -> None:
+        """
+        Constructor for the application class to initialize an application object.
+        Space-time complexity: O(1)
+        """
         self.packages: HashTable = HashTable()
         self.graph: Graph = Graph()
         self.trucks: list[Truck] = [Truck(i + 1) for i in range(NUMBER_OF_TRUCKS)]
         self.drivers: list[Driver] = [Driver(i + 1) for i in range(NUMBER_OF_DRIVERS)]
 
     def start(self) -> None:
+        """
+        This function will begin the delivery simulation.
+        """
         self.load_packages()
         self.load_trucks()
-        self.load_distances()
+        self.load_nodes()
+        self.load_edges()
         self.load_initial_drivers()
         self.deliver_packages()
         self.cli()
 
     def load_packages(self) -> None:
+        """
+        This function iterates each row of the packages.csv file and initializes a package object based on the data.
+        Space-time complexity: O(N)
+        """
         with open("data/packages.csv") as file:
             file_data: reader = reader(file)
             for row in file_data:
@@ -44,6 +54,11 @@ class Application:
                 self.packages.insert(package.package_id, package)
 
     def load_trucks(self) -> None:
+        """
+        This function takes every package found in the packages.csv file and determines which truck the package should
+        be loaded onto.
+        Space-time complexity: O(N + M)
+        """
         packages: list["Package"] = []
 
         for package_id in range(self.packages.table_items):
@@ -65,13 +80,23 @@ class Application:
                 truck_index += 1
             self.trucks[truck_index].load_package(package)
 
-    def load_distances(self) -> None:
+    def load_nodes(self) -> None:
+        """
+        This function takes the data from the addresses.csv file to generate all the nodes in the delivery graph.
+        Space-time complexity: O(N)
+        """
         with open("data/addresses.csv") as file:
             file_data: reader = reader(file)
             for row in file_data:
                 node: "Node" = Node(int(row[0]), row[1], row[2], row[3])
                 self.graph.add_node(node)
 
+    def load_edges(self) -> None:
+        """
+        This function takes the data from the distances.csv file to generate all the edges and their distances in the
+        delivery graph.
+        Space-time complexity: O(N)
+        """
         with open("data/distances.csv") as file:
             file_data: reader = reader(file)
             for i, row in enumerate(file_data):
@@ -80,7 +105,13 @@ class Application:
                         edge: "Edge" = Edge(self.graph.nodes_list[j], self.graph.nodes_list[i], float(row[j]))
                         self.graph.add_edge(edge)
 
-    def load_initial_drivers(self):
+    def load_initial_drivers(self) -> None:
+        """
+        This function loops through both drivers and has them select the first two trucks to load themselves into. The
+        driver who loads into the second truck will be delayed until the flight arrival time. Then for each package on
+        the selected truck, the package's departure time is set equal to the driver's current time.
+        Space-time complexity: O(DTP)
+        """
         for driver in self.drivers:
             driver.select_truck(self.trucks)
             if driver.current_truck.truck_id == 2:
@@ -90,15 +121,26 @@ class Application:
             for package in driver.current_truck.packages:
                 package.departure_time = driver.current_time
 
-    def change_truck(self, truck: "Truck"):
+    def change_truck(self, truck: "Truck") -> None:
+        """
+        This function will return a truck to the hub and have its driver select a new truck to operate. It will also
+        set each package's departure time, on the new truck, to the drivers current time.
+        """
         truck.driver.select_truck(self.trucks)
         truck.returned = True
         truck.driver.current_truck.filter_truck_graph(self.graph)
         truck.driver.current_truck.determine_path()
-        truck.driver.current_truck.departure_time = truck.driver.current_time
+        for package in truck.driver.current_truck.packages:
+            package.departure_time = truck.driver.current_time
         truck.driver = None
 
-    def deliver_packages(self):
+    def deliver_packages(self) -> None:
+        """
+        This function represents the primary delivery loop to traverse each truck through its delivery path, delivering
+        every package it has to their appropriate delivery locations. Also, whenever the driver of the second truck has
+        their current time pass 10:20, the package with the incorrect delivery address will be corrected, and the
+        delivery path will be adjusted to match the new address.
+        """
         packages_delivered: int = 0
         while packages_delivered < self.packages.table_items:
             for truck in self.trucks:
@@ -122,6 +164,11 @@ class Application:
                     self.change_truck(truck)
 
     def cli(self):
+        """
+        This method represents the command line interface that the user will interact with to see the package status
+        at whatever time the user would like. At the end of the application every package and the package status will
+        be displayed along with the total distance traveled by each truck.
+        """
         while True:
             try:
                 user_hour: int = int(input("Enter the hour you would like to check: "))
@@ -174,6 +221,9 @@ class Application:
 
 
 def main() -> None:
+    """
+    Entry point of the application
+    """
     Application().start()
 
 

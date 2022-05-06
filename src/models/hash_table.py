@@ -5,8 +5,8 @@ from src.utilities.primes import generate_next_prime
 class HashTable:
     def __init__(self, initial_capacity: int = 10) -> None:
         """
-        Constructor to initialize a HashTable
-        Space-time complexity: O(N)
+        Constructor to initialize a HashTable.
+        Space-time complexity: O(C + N^2)
         """
 
         self.initial_capacity: int = generate_next_prime(initial_capacity)
@@ -18,7 +18,7 @@ class HashTable:
 
     def __repr__(self) -> str:
         """
-        Repr dunder method to represent a hashtable.
+        Repr method to represent a hashtable.
         Space-time complexity: O(1)
         """
 
@@ -28,7 +28,7 @@ class HashTable:
         """
         Lookup function to search for a specific value associated with a provided key. If the keys hash is not present,
         return None, otherwise, loop through each key at the matching hash index until a match is found, then return the
-        associated value
+        associated value.
         Space-time complexity: O(N)
         """
 
@@ -80,7 +80,7 @@ class HashTable:
         """
         A resize function that increases the size of the hash table whenever a load limit is hit. This is done to ensure
         that matching hashes are much less frequent, leading towards better lookup efficiency down the road.
-        Space-time complexity: O(N^2)
+        Space-time complexity: O(N + I + P)
         """
 
         new_table: list[list[Any]] = []
