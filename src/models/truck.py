@@ -85,7 +85,7 @@ class Truck:
     def find_minimal_spanning_tree(self) -> "Node":
         """
         This method implements prims algorithm to generate a minimal spanning tree starting from to hub node.
-        Space-time complexity: O(ElogE)
+        Time complexity: O(ElogE)
         """
         num_mst_edges: int = self.delivery_graph.nodes.table_items - 1
         edge_count: int = 0
@@ -120,7 +120,7 @@ class Truck:
         """
         This method implements the depth first search algorithm to traverse the nodes in the given mst and return the
         path taken, ignoring all duplicate nodes
-        Space-time complexity: O(E + N + P)
+        Time complexity: O(E + N + P) Space Complexity: O(N)
         """
         if node in path:
             return path
