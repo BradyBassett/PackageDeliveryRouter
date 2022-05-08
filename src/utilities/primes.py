@@ -1,7 +1,8 @@
 def generate_next_prime(num: int) -> int:
     """
-    Function to generate the next prime number after the given parameter.
-    Space-time complexity O(N^2)
+    Function to generate the next prime number after the given parameter.\n
+    Space complexity O(1)\n
+    Time complexity O(N)
     """
     if num <= 1:
         return 2
@@ -14,8 +15,9 @@ def generate_next_prime(num: int) -> int:
 
 def is_prime(num: int) -> bool:
     """
-    Function to determine if a given integer is prime.
-    Space-time complexity O(N)
+    Function to determine if a given integer is prime.\n
+    Space complexity O(1)\n
+    Time complexity O(N)
     """
     if num % 2 == 0:
         return False

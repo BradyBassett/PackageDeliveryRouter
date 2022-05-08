@@ -5,8 +5,8 @@ from src.utilities.primes import generate_next_prime
 class HashTable:
     def __init__(self, initial_capacity: int = 10) -> None:
         """
-        Constructor to initialize a HashTable.
-        Space-time complexity: O(C + N^2)
+        Constructor to initialize a HashTable.\n
+        Space-time complexity: O(N)
         """
 
         self.initial_capacity: int = generate_next_prime(initial_capacity)
@@ -18,7 +18,7 @@ class HashTable:
 
     def __repr__(self) -> str:
         """
-        Repr method to represent a hashtable.
+        Repr method to represent a hashtable.\n
         Space-time complexity: O(1)
         """
 
@@ -28,8 +28,9 @@ class HashTable:
         """
         Lookup function to search for a specific value associated with a provided key. If the keys hash is not present,
         return None, otherwise, loop through each key at the matching hash index until a match is found, then return the
-        associated value.
-        Space-time complexity: O(N)
+        associated value.\n
+        Space complexity: O(1)\n
+        Time complexity: O(N)
         """
 
         index: int = hash_key(key, len(self.table))
@@ -43,8 +44,9 @@ class HashTable:
     def insert(self, key: Any, value: Any) -> None:
         """
         Insert function to insert a key value pair into the hash table. In the case where the key already exists in the
-        table, the value will be replaced with the new value (doubles as a modify function).
-        Space-time complexity: O(N^2)
+        table, the value will be replaced with the new value (doubles as a modify function).\n
+        Space complexity: O(1)\n
+        Time complexity: O(N)
         """
 
         load_factor: float = self.table_items / len(self.table)
@@ -63,8 +65,9 @@ class HashTable:
 
     def remove(self, key: Any) -> Any:
         """
-        Remove function to pop a matching key value pair from the table and if a match exists, the value is returned.
-        Space-time complexity: O(N)
+        Remove function to pop a matching key value pair from the table and if a match exists, the value is returned.\n
+        Space complexity: O(1)\n
+        Time complexity: O(N)
         """
 
         index = hash_key(key, len(self.table))
@@ -79,8 +82,9 @@ class HashTable:
     def _resize(self) -> None:
         """
         A resize function that increases the size of the hash table whenever a load limit is hit. This is done to ensure
-        that matching hashes are much less frequent, leading towards better lookup efficiency down the road.
-        Space-time complexity: O(N + I + P)
+        that matching hashes are much less frequent, leading towards better lookup efficiency down the road.\n
+        Space complexity: O(N)\n
+        Time complexity: O(N + MP)
         """
 
         new_table: list[list[Any]] = []
@@ -96,8 +100,8 @@ class HashTable:
 
 def hash_key(key: Any, table_len: int) -> int:
     """
-    Given a key value calculate the index of the table that the value will be stored in.
-    Space-time complexity: O(N)
+    Given a key value calculate the index of the table that the value will be stored in.\n
+    Space-time complexity: O(1)
     """
 
     return hash(key) % table_len
@@ -105,7 +109,7 @@ def hash_key(key: Any, table_len: int) -> int:
 
 def add_pair(key: Any, value: Any, table: list[list[Any]], index: int) -> None:
     """
-    Function to append a key value pair to a given table at the given index.
+    Function to append a key value pair to a given table at the given index.\n
     Space-time complexity: O(1)
     """
 

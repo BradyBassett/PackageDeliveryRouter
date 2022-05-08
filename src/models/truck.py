@@ -47,7 +47,8 @@ class Truck:
         """
         This method when provided a graph parameter will filter out all edges and nodes that do not match the trucks
         package list.
-        Space-time complexity: O(N + E)
+        Space complexity: O(P + N + E)
+        Time complexity: O(P + N + E) + O(M^2 + N)
         """
         package_addresses: list[str] = [p.address for p in self.packages]
         package_nodes: HashTable = HashTable(40)

@@ -7,7 +7,7 @@ class Package:
     def __init__(self, package_id: int, address: str, city: str, state: str, zipcode: int, deadline: str, weight: int,
                  special_notes: str) -> None:
         """
-        Constructor class to initialize a new package object.
+        Constructor class to initialize a new package object.\n
         Space-time complexity: O(1)
         """
         self.package_id: int = package_id
@@ -25,7 +25,7 @@ class Package:
 
     def __repr__(self) -> str:
         """
-        Repr method to display a package object.
+        Repr method to display a package object.\n
         Space-time complexity: O(1)
         """
         return f"\n{self.package_id}, {self.address}, {self.city}, {self.state}, {self.zipcode}, {self.priority}, " \
@@ -34,7 +34,7 @@ class Package:
     def calculate_priority(self) -> int:
         """
         A method to determine a packages priority based on its city in relation to the hub as well as whether it has a
-        delivery deadline.
+        delivery deadline.\n
         Space-time complexity: O(1)
         """
         priority: int = 0
@@ -55,7 +55,7 @@ class Package:
 
 def get_deadline(deadline: str) -> Optional[datetime]:
     """
-    A method to calculate the datetime deadline of a package based on a given string representing the deadline.
+    A method to calculate the datetime deadline of a package based on a given string representing the deadline.\n
     Space-time complexity: O(1)
     """
     if deadline == "EOD":

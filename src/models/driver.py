@@ -12,7 +12,7 @@ START_HOUR: int = 8
 class Driver:
     def __init__(self, driver_id: int) -> None:
         """
-        Constructor to initialize a driver object.
+        Constructor to initialize a driver object.\n
         Space-time complexity: O(1)
         """
         self.driver_id: int = driver_id
@@ -21,15 +21,16 @@ class Driver:
 
     def __repr__(self) -> str:
         """
-        Repr method to represent the driver object
+        Repr method to represent the driver object\n
         Space-time complexity: O(1)
         """
         return f"Driver ID: {self.driver_id}, Current Truck: {self.current_truck.truck_id}"
 
     def select_truck(self, trucks: list["Truck"]) -> None:
         """
-        Function that loops through a list of trucks and selects the first one that the driver is able to load into.
-        Space-time complexity: O(N)
+        Function that loops through a list of trucks and selects the first one that the driver is able to load into.\n
+        Space complexity: O(1)\n
+        Time complexity: O(N)
         """
         for truck in trucks:
             if truck.driver is None and truck.returned is True:
@@ -40,7 +41,7 @@ class Driver:
     def progress_time(self, distance: float, speed: int):
         """
         Function that takes the total distance traveled along with the speed traveled and adds the timedelta to the
-        drivers current time.
+        drivers current time.\n
         Space-time complexity: O(1)
         """
         travel_time: float = distance / speed

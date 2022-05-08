@@ -9,8 +9,9 @@ if TYPE_CHECKING:
 class Graph:
     def __init__(self, nodes=None, edges=None, nodes_list=None, edges_list=None) -> None:
         """
-        Constructor method to initialize a graph object.
-        Space-time complexity: O(1)
+        Constructor method to initialize a graph object.\n
+        Space complexity: O(N + M + P + L)\n
+        Time complexity: O(1)
         """
         if nodes is None:
             nodes: HashTable = HashTable()
@@ -28,7 +29,7 @@ class Graph:
 
     def add_node(self, node: "Node") -> None:
         """
-        Method to add a node to the nodes hash table as well as the nodes_list list.
+        Method to add a node to the nodes hash table as well as the nodes_list list.\n
         Space-time complexity: O(1)
         """
         self.nodes.insert(node.node_address, node)
@@ -36,7 +37,7 @@ class Graph:
 
     def add_edge(self, edge: "Edge") -> None:
         """
-        Method to add an edge to the edges hash table as well as the edges_list list.
+        Method to add an edge to the edges hash table as well as the edges_list list.\n
         Space-time complexity: O(1)
         """
         self.edges.insert((edge.origin.node_address, edge.destination.node_address), edge)
@@ -44,15 +45,16 @@ class Graph:
 
     def lookup_node(self, address: str) -> Optional["Node"]:
         """
-        A method to lookup whether a node is present within the graph using a provided address.
-        Space-time complexity: O(N)
+        A method to lookup whether a node is present within the graph using a provided address.\n
+        Space-time complexity: O(1)
         """
         return self.nodes.lookup(address)
 
     def lookup_edge(self, origin_address: str, destination_address: str) -> Optional["Edge"]:
         """
-        A method to lookup whether an edge is present within the graph using a provided origin and destination address.
-        Space-time complexity: O(N)
+        A method to lookup whether an edge is present within the graph using a provided origin and destination
+        address.\n
+        Space-time complexity: O(1)
         """
         if self.edges.lookup((origin_address, destination_address)):
             return self.edges.lookup((origin_address, destination_address))
