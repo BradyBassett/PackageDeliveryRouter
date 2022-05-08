@@ -10,7 +10,7 @@ class Graph:
     def __init__(self, nodes=None, edges=None, nodes_list=None, edges_list=None) -> None:
         """
         Constructor method to initialize a graph object.\n
-        Space complexity: O(N + M + P + L)\n
+        Space complexity: O(N + M)\n
         Time complexity: O(1)
         """
         if nodes is None:

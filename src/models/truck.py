@@ -16,8 +16,9 @@ AVG_SPEED: int = 18  # MPH
 class Truck:
     def __init__(self, truck_id: int) -> None:
         """
-        Constructor for the truck class to initialize a truck object.
-        Space-time complexity: O(1)
+        Constructor for the truck class to initialize a truck object.\n
+        Space complexity: O(N + M)\n
+        Time complexity: O(1)
         """
         self.truck_id: int = truck_id
         self.driver: Optional[Driver] = None
@@ -31,14 +32,14 @@ class Truck:
 
     def __repr__(self) -> str:
         """
-        Repr function to display the truck object.
+        Repr function to display the truck object.\n
         Space-time complexity: O(1)
         """
         return f"Truck ID: {self.truck_id}, Current Driver: {self.driver.driver_id}, Packages Loaded: {self.packages}"
 
     def load_package(self, package: "Package") -> None:
         """
-        Method to load a package onto the truck.
+        Method to load a package onto the truck.\n
         Space-time complexity: O(1)
         """
         self.packages.append(package)
@@ -46,9 +47,8 @@ class Truck:
     def filter_truck_graph(self, graph: "Graph") -> None:
         """
         This method when provided a graph parameter will filter out all edges and nodes that do not match the trucks
-        package list.
-        Space complexity: O(P + N + E)
-        Time complexity: O(P + N + E) + O(M^2 + N)
+        package list.\n
+        Space-time complexity: O(P + N + E)
         """
         package_addresses: list[str] = [p.address for p in self.packages]
         package_nodes: HashTable = HashTable(40)
@@ -77,8 +77,8 @@ class Truck:
 
     def determine_path(self) -> None:
         """
-        This function is a helper function to determine the trucks path based on the mst-dfs algorithms
-        Space-time complexity: O(E^2logE + N)
+        This function is a helper function to determine the trucks path based on the mst-dfs algorithms\n
+        Space-time complexity: O(1)
         """
         start: "Node" = self.find_minimal_spanning_tree()
         self.delivery_path = self.depth_first_search(start, []) + [start]
@@ -86,6 +86,7 @@ class Truck:
     def find_minimal_spanning_tree(self) -> "Node":
         """
         This method implements prims algorithm to generate a minimal spanning tree starting from to hub node.
+        Space complexity: O(N)\n
         Time complexity: O(ElogE)
         """
         num_mst_edges: int = self.delivery_graph.nodes.table_items - 1
@@ -120,8 +121,9 @@ class Truck:
     def depth_first_search(self, node: "Node", path: list["Node"]) -> list["Node"]:
         """
         This method implements the depth first search algorithm to traverse the nodes in the given mst and return the
-        path taken, ignoring all duplicate nodes
-        Time complexity: O(E + N + P) Space Complexity: O(N)
+        path taken, ignoring all duplicate nodes\n
+        Time complexity: O(E + N + P)\n
+        Space Complexity: O(N)
         """
         if node in path:
             return path
@@ -139,7 +141,7 @@ class Truck:
     def go_to_next_node(self) -> None:
         """
         Using the trucks' delivery path this function progresses the truck to the next available node and progresses the
-        drivers time using the distance between the two nodes, as well as adding to the total distance traveled.
+        drivers time using the distance between the two nodes, as well as adding to the total distance traveled.\n
         Space-time complexity: O(1)
         """
         self.current_address = self.delivery_path.pop(0).node_address
@@ -150,8 +152,9 @@ class Truck:
     def deliver_package(self) -> int:
         """
         This function loops through each package and for each package whose delivery address matches the trucks current
-        address will deliver that package.
-        Space-time complexity: O(P + M)
+        address will deliver that package.\n
+        Space complexity: O(M)\n
+        Time complexity: O(P + M)
         """
         matching_packages: list["Package"] = []
         for package in self.packages:
@@ -168,7 +171,8 @@ class Truck:
 def _add_edge(curr_node: "Node", pqueue: heapq):
     """
     Adds the first applicable edge from the given node to the priority queue.
-    Space-time complexity: O(N)
+    Space complexity: O(1)
+    Time complexity: O(N)
     """
     for edge in curr_node.edges:
         if (edge.origin == curr_node and edge.destination.visited is False) or \

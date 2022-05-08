@@ -21,8 +21,8 @@ CORRECT_PACKAGE_ADDRESS: tuple[str, int] = ("410 South State St", 84111)
 class Application:
     def __init__(self) -> None:
         """
-        Constructor for the application class to initialize an application object.
-        Space-time complexity: O(1)
+        Constructor for the application class to initialize an application object.\n
+        Space-time complexity: O(T + D)
         """
         self.packages: HashTable = HashTable()
         self.graph: Graph = Graph()
@@ -31,7 +31,8 @@ class Application:
 
     def start(self) -> None:
         """
-        This function will begin the delivery simulation.
+        This function will begin the delivery simulation.\n
+        Space-time complexity: O(N)
         """
         self.load_packages()
         self.load_trucks()
@@ -43,7 +44,7 @@ class Application:
 
     def load_packages(self) -> None:
         """
-        This function iterates each row of the packages.csv file and initializes a package object based on the data.
+        This function iterates each row of the packages.csv file and initializes a package object based on the data.\n
         Space-time complexity: O(N)
         """
         with open("data/packages.csv") as file:
@@ -56,8 +57,9 @@ class Application:
     def load_trucks(self) -> None:
         """
         This function takes every package found in the packages.csv file and determines which truck the package should
-        be loaded onto.
-        Space-time complexity: O(N + M)
+        be loaded onto.\n
+        Space complexity: O(P)\n
+        Time complexity: O(NM + P)
         """
         packages: list["Package"] = []
 
@@ -82,7 +84,7 @@ class Application:
 
     def load_nodes(self) -> None:
         """
-        This function takes the data from the addresses.csv file to generate all the nodes in the delivery graph.
+        This function takes the data from the addresses.csv file to generate all the nodes in the delivery graph.\n
         Space-time complexity: O(N)
         """
         with open("data/addresses.csv") as file:
@@ -94,8 +96,9 @@ class Application:
     def load_edges(self) -> None:
         """
         This function takes the data from the distances.csv file to generate all the edges and their distances in the
-        delivery graph.
-        Space-time complexity: O(N)
+        delivery graph.\n
+        Space complexity: O(N)\n
+        Time complexity: O(N^2)
         """
         with open("data/distances.csv") as file:
             file_data: reader = reader(file)
@@ -109,8 +112,9 @@ class Application:
         """
         This function loops through both drivers and has them select the first two trucks to load themselves into. The
         driver who loads into the second truck will be delayed until the flight arrival time. Then for each package on
-        the selected truck, the package's departure time is set equal to the driver's current time.
-        Space-time complexity: O(DTP)
+        the selected truck, the package's departure time is set equal to the driver's current time.\n
+        Space complexity: O(1)\n
+        Time complexity: O(DP)
         """
         for driver in self.drivers:
             driver.select_truck(self.trucks)
@@ -124,7 +128,9 @@ class Application:
     def change_truck(self, truck: "Truck") -> None:
         """
         This function will return a truck to the hub and have its driver select a new truck to operate. It will also
-        set each package's departure time, on the new truck, to the drivers current time.
+        set each package's departure time, on the new truck, to the drivers current time.\n
+        Space complexity: O(1)\n
+        Time complexity: O(N)
         """
         truck.driver.select_truck(self.trucks)
         truck.returned = True
@@ -139,7 +145,9 @@ class Application:
         This function represents the primary delivery loop to traverse each truck through its delivery path, delivering
         every package it has to their appropriate delivery locations. Also, whenever the driver of the second truck has
         their current time pass 10:20, the package with the incorrect delivery address will be corrected, and the
-        delivery path will be adjusted to match the new address.
+        delivery path will be adjusted to match the new address.\n
+        Space complexity: O(1)\n
+        Time complexity: O(PTN)
         """
         packages_delivered: int = 0
         while packages_delivered < self.packages.table_items:
@@ -167,7 +175,9 @@ class Application:
         """
         This method represents the command line interface that the user will interact with to see the package status
         at whatever time the user would like. At the end of the application every package and the package status will
-        be displayed along with the total distance traveled by each truck.
+        be displayed along with the total distance traveled by each truck.\n
+        Space complexity: O(1)\n
+        Time complexity: O(H + M + S + P + T)
         """
         while True:
             try:
@@ -222,7 +232,8 @@ class Application:
 
 def main() -> None:
     """
-    Entry point of the application
+    Entry point of the application\n
+    Space-time complexity: O(1)
     """
     Application().start()
 
