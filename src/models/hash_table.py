@@ -1,5 +1,5 @@
 from typing import Any
-from src.utilities.primes import generate_next_prime
+from utilities.primes import generate_next_prime
 
 
 class HashTable:
