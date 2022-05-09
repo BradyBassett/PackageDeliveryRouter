@@ -69,6 +69,8 @@ IDE: Pycharm 2022.1
 
 Python 3.10
 
+To run the application navigate to the src folder and run main.py using python version 3.10 and above
+
 ## Space-Time and Big O
 
 See inline pydoc comments.
