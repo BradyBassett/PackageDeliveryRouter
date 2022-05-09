@@ -40,7 +40,7 @@ class Graph:
         Method to add an edge to the edges hash table as well as the edges_list list.\n
         Space-time complexity: O(1)
         """
-        self.edges.insert((edge.origin.node_address, edge.destination.node_address), edge)
+        self.edges.insert((edge.node_1.node_address, edge.node_2.node_address), edge)
         self.edges_list.append(edge)
 
     def lookup_node(self, address: str) -> Optional["Node"]:
@@ -50,13 +50,13 @@ class Graph:
         """
         return self.nodes.lookup(address)
 
-    def lookup_edge(self, origin_address: str, destination_address: str) -> Optional["Edge"]:
+    def lookup_edge(self, node_1_address: str, node_2_address: str) -> Optional["Edge"]:
         """
-        A method to lookup whether an edge is present within the graph using a provided origin and destination
+        A method to lookup whether an edge is present within the graph using a provided node_1 and node_2
         address.\n
         Space-time complexity: O(1)
         """
-        if self.edges.lookup((origin_address, destination_address)):
-            return self.edges.lookup((origin_address, destination_address))
+        if self.edges.lookup((node_1_address, node_2_address)):
+            return self.edges.lookup((node_1_address, node_2_address))
         else:
-            return self.edges.lookup((destination_address, origin_address))
+            return self.edges.lookup((node_2_address, node_1_address))

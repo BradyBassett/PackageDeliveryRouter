@@ -65,12 +65,12 @@ class Truck:
         edges_list: list["Edge"] = []
         for edge in graph.edges_list:
             if edge.eligible(nodes_list):
-                edge.origin.edges.append(edge)
-                origin: str = edge.origin.node_address
-                edge.destination.edges.append(edge)
-                destination: str = edge.destination.node_address
+                edge.node_1.edges.append(edge)
+                node_1: str = edge.node_1.node_address
+                edge.node_2.edges.append(edge)
+                node_2: str = edge.node_2.node_address
                 edge.calculate_priority()
-                filtered_edges.insert((origin, destination), edge)
+                filtered_edges.insert((node_1, node_2), edge)
                 edges_list.append(edge)
 
         self.delivery_graph = Graph(package_nodes, filtered_edges, nodes_list, edges_list)
@@ -102,10 +102,10 @@ class Truck:
             prev_node: "Node" = curr_node
             edge = heapq.heappop(pqueue)
 
-            if curr_node == edge.origin:
-                curr_node = edge.destination
+            if curr_node == edge.node_1:
+                curr_node = edge.node_2
             else:
-                curr_node = edge.origin
+                curr_node = edge.node_1
 
             if curr_node.visited:
                 continue
@@ -128,6 +128,7 @@ class Truck:
         if node in path:
             return path
 
+        # Filters out every other node that is not applicable to the packages
         for package in self.packages:
             if package.address == node.node_address or package.address == "HUB":
                 path.append(node)
@@ -156,6 +157,7 @@ class Truck:
         Space complexity: O(M)\n
         Time complexity: O(P + M)
         """
+        # Matching packages is used to be able to safely remove the packages without interfering with the package loop
         matching_packages: list["Package"] = []
         for package in self.packages:
             if package.address == self.current_address:
@@ -175,6 +177,6 @@ def _add_edge(curr_node: "Node", pqueue: heapq):
     Time complexity: O(N)
     """
     for edge in curr_node.edges:
-        if (edge.origin == curr_node and edge.destination.visited is False) or \
-                (edge.destination == curr_node and edge.origin.visited is False):
+        if (edge.node_1 == curr_node and edge.node_2.visited is False) or \
+                (edge.node_2 == curr_node and edge.node_1.visited is False):
             heapq.heappush(pqueue, edge)

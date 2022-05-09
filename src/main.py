@@ -1,5 +1,7 @@
 """
-
+Brady
+Bassett
+#002616010
 """
 from datetime import datetime
 from csv import reader
@@ -65,14 +67,22 @@ class Application:
 
         for package_id in range(self.packages.table_items):
             package: "Package" = self.packages.lookup(package_id + 1)
+            # If the package has no special notes
             if package.special_notes == "":
-                if package.delivery_deadline or package.package_id in [13, 14, 15, 16, 19, 20]:
+                # If the package is related to packages with "Must be delivered with" in their special notes and loads
+                # them onto truck 1
+                if package.delivery_deadline or package.package_id in [13, 15, 19,]:
                     self.trucks[0].load_package(package)
+                # Otherwise, add them to a list that will be distributed to the spaces remaining on the trucks
                 else:
                     packages.append(package)
+            # If the package contains special notes
             else:
+                # If the package has "Must be delivered with" in the special notes, load it onto truck 1 with the
+                # related packages
                 if "Must be delivered with" in package.special_notes:
                     self.trucks[0].load_package(package)
+                # Otherwise, load all remaining packages onto truck 2
                 else:
                     self.trucks[1].load_package(package)
 
@@ -155,6 +165,8 @@ class Application:
                 if not truck.driver:
                     continue
 
+                # This simulates the WGUPS receiving the correct package address at 10:20 and adjusts the trucks' path
+                # according to the new package address
                 if truck.truck_id == 2 and truck.driver.current_time >= PACKAGE_ADDRESS_CORRECTED:
                     for package in truck.packages:
                         if package.special_notes == "Wrong address listed":

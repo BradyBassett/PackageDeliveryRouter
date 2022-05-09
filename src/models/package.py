@@ -39,6 +39,7 @@ class Package:
         """
         priority: int = 0
 
+        # Cities closer to the Hub city will have a lower priority number
         cities = {
             "Salt Lake City": 0,
             "Millcreek": 10,
@@ -47,6 +48,7 @@ class Package:
             "Murray": 40
         }
 
+        # Prioritize nodes with a delivery deadline over nodes without
         if self.delivery_deadline is not None:
             priority -= 20
 

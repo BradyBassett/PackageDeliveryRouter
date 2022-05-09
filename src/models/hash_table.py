@@ -9,10 +9,12 @@ class HashTable:
         Space-time complexity: O(N)
         """
 
+        # Converts the initial capacity to a prime number to improve the hashing efficiency
         self.initial_capacity: int = generate_next_prime(initial_capacity)
         self.table: list[list[Any]] = []
         self.table_items: int = 0
 
+        # Initializes the table with empty lists up to the initial capacity
         for _ in range(initial_capacity):
             self.table.append([])
 
@@ -37,6 +39,8 @@ class HashTable:
         if self.table[index] is None:
             return None
 
+        # If a match is found, loop through each key value pair present at the index until a match is found, usually
+        # There will only be one key value pair at the provided index
         for pair in self.table[index]:
             if pair[0] == key:
                 return pair[1]
@@ -54,6 +58,8 @@ class HashTable:
             self._resize()
 
         index: int = hash_key(key, len(self.table))
+        # If a key already exists in the table matching the provided key, replace that keys value and do not increment
+        # the table items
         increment: bool = True
         for pair in self.table[index]:
             if pair[0] is key:
@@ -82,7 +88,9 @@ class HashTable:
     def _resize(self) -> None:
         """
         A resize function that increases the size of the hash table whenever a load limit is hit. This is done to ensure
-        that matching hashes are much less frequent, leading towards better lookup efficiency down the road.\n
+        that matching hashes are much less frequent, leading towards better lookup efficiency down the road. This is
+        done by creating a new table that is about twice the size of the previous table and re-hashing each key value
+        pair within the table\n
         Space complexity: O(N)\n
         Time complexity: O(N + MP)
         """
@@ -114,6 +122,6 @@ def add_pair(key: Any, value: Any, table: list[list[Any]], index: int) -> None:
     """
 
     if table[index] is None:
-        table.append([key, value])
+        table[index] = [key, value]
     else:
         table[index].append([key, value])
