@@ -28,8 +28,19 @@ class Package:
         Repr method to display a package object.\n
         Space-time complexity: O(1)
         """
-        return f"\n{self.package_id}, {self.address}, {self.city}, {self.state}, {self.zipcode}, {self.priority}, " \
-               f"{self.delivery_deadline}, {self.special_notes}"
+        representation: str = f"Package {self.package_id}, {self.delivery_status}"
+        if self.delivery_deadline:
+            representation += f", Deadline {self.delivery_deadline.time()}"
+        else:
+            representation += ", No deadline"
+
+        if self.departure_time and self.delivery_status != "At the hub":
+            representation += f", Departed at {self.departure_time.time()}"
+
+        if self.delivered_time and self.delivery_status == "Delivered":
+            representation += f", Delivered at {self.delivered_time.time()}"
+
+        return representation
 
     def calculate_priority(self) -> int:
         """

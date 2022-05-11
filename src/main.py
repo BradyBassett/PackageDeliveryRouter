@@ -233,7 +233,7 @@ class Application:
                 package.delivery_status = "Delivered"
             elif package.departure_time and package.departure_time < user_time:
                 package.delivery_status = "En route"
-            print(package.package_id, package.delivery_status)
+            print(package)
 
         distance: int = 0
         for truck in self.trucks:
