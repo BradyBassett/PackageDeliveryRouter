@@ -69,6 +69,10 @@ IDE: Pycharm 2022.1
 
 Python 3.10
 
+Processor: Intel Core I5-6600k 3.5GHz
+
+Ram: 16GB 2400MHz DDR4
+
 To run the application navigate to the src folder and run main.py using python version 3.10 and above
 
 ## Space-Time and Big O
@@ -105,7 +109,7 @@ See hash_table.py file.
 
 ## Explanation Of Data Structure
 
-`	`A hash table is a self-adjusting data structure which is capable of associating keys to values, using a hashing function on the key to compute an index. This hash index is then used for all operations on the value.
+`	`A hash table is a self-adjusting data structure which is capable of associating keys to values, using a hashing function on the key to compute an index. This hash index is then used for all operations on the value. In the application, each package is stored using the package address as the key, and the created package object as the value. This is done so that I am able to use the package address to lookup both packages, and the nodes that each package is being delivered to.
 
 ## Hash Table
 
@@ -119,41 +123,33 @@ See lines 186-242 in main.py
 
 Time entered: 8:50:00
 <br>
-![](images/first_check_1.png)
-![](images/first_check_2.png)
+![First Check](images/first_check.png)
 
 ## Second Status Check
 
 Time entered: 9:50:00 
 <br>
-![](images/second_check_1.png)
-![](images/second_check_2.png)
+![Second Check](images/second_check.png)
 
 ## Third Status Check
 
 Time entered: 12:05:21
 <br>
-![](images/third_check_1.png)
-![](images/third_check_2.png)
+![Third Check](images/third_check.png)
 
 ## Screenshots of Code Execution
 
 Application asks user for an hour to check package status and validates the input.
 <br>
-![](images/code_execution_1.png)
+![Code Execution 1](images/code_execution_1.png)
 <br>
 Application asks user for a second to check package status and validates the input.
 <br>
-![](images/code_execution_2.png)
+![Code Execution 2](images/code_execution_2.png)
 <br>
-Application asks user for a second to check package status and validates the input.
+Application asks user for a second to check package status and validates the input. Application then will display the time that the user inputted along with the delivery status of every package at the provided time. At the end of the output, the final total mileage is printed.
 <br>
-![](images/code_execution_3.png)
-<br>
-Application then will display the time that the user inputted along with the delivery status of every package at the provided time. At the end of the output, the final total mileage is printed.
-<br>
-![](images/code_execution_4.png)
-![](images/code_execution_5.png)
+![Code Execution 3](images/code_execution_3.png)
 ## Strengths of Chosen Algorithm
 `	`My algorithm is very adept at getting a relatively optimal solution, without the exponential tradeoffs of solutions that will guaranteed provide the optimal delivery path. Prims algorithm is capable of creating a minimal spanning tree of every node, starting from the first node, and then by traversing through that tree a good approximation of the optimal solution can be made, in this case resulting in a total distance traveled for all trucks being at 100.6 miles.
 
@@ -174,18 +170,24 @@ Time - O(N + E) + O(ELogE)
 First, gets minimal spanning tree from graph, then traverses that tree to get the path solution.
 
 Good approximation of the solution
+
+My solution I believe is the best of both worlds when compared to the two other options. It is relatively fast, in some cases even faster than the nearest neighbor
 ### Nearest Neighbor
 Time - O(N^2)
 
 This algorithm starts from a chosen node and then selects the edge with the lowest weight and sets that connecting node as the current node and then repeats until a solution is found.
 
 Poor approximation of the solution
+
+This solution overall is very simple and when compared to my chosen algorithm is very lacking in performance. I originally chose this algorithm as my primary solution and often found my lowest mileage being somewhere in the 130s at best, with incorrect package loading. So, though this algorithm is simple and relatively fast, its accuracy is not very good.
 ### Brute Force
 Time - O(N!)
 
 This solution first creates an adjacency matrix for every node and edge. After this the algorithm will calculate every permutation and determine that path distance, with the lowest distance path in the end being the correct solution.
 
 Optimal solution
+
+When compared to my solution this algorithm has much better solutions as it is guaranteed to determine the most optimal pathing. Though this accuracy comes with the massive downside of having abysmally slow computational time, with having a factorial time complexity. So, though this algorithm has optimal results, the speed is a dealbreaker.
 
 ## Different Approach
 
@@ -197,7 +199,7 @@ See lines 29-46 and 48-70 in the hash_table.py file to verify that my data struc
 
 ## Efficiency
 
-See lines 89-90 and 125-126 in the trucks.py file to see efficiency of my algorithm.
+Because of the nature of lookup functions in hash tables, the efficiency of most lookups will not be affected as the number of packages increases. This is because, so long as there is not a hashing conflict, the average lookup time is constant. So, if I had a table of 10 packages and a table of 1000 packages, when looking up a given package, there will generally be no discrepancies in the lookup time.
 
 ## Overhead
 
