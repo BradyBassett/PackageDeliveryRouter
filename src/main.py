@@ -71,7 +71,7 @@ class Application:
             if package.special_notes == "":
                 # If the package is related to packages with "Must be delivered with" in their special notes and loads
                 # them onto truck 1
-                if package.delivery_deadline or package.package_id in [13, 15, 19,]:
+                if package.delivery_deadline or package.package_id in [13, 15, 19]:
                     self.trucks[0].load_package(package)
                 # Otherwise, add them to a list that will be distributed to the spaces remaining on the trucks
                 else:

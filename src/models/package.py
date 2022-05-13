@@ -61,7 +61,12 @@ class Package:
 
         # Prioritize nodes with a delivery deadline over nodes without
         if self.delivery_deadline is not None:
-            priority -= 20
+            if self.package_id == 15:
+                priority -= 22
+            priority -= 34
+            if self.special_notes == "Delayed on flight---will not arrive to depot until 9:05 am" or \
+                    "Wrong address listed":
+                priority += 4
 
         return priority + cities[self.city]
 

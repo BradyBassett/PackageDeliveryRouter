@@ -122,8 +122,8 @@ class Truck:
         """
         This method implements the depth first search algorithm to traverse the nodes in the given mst and return the
         path taken, ignoring all duplicate nodes\n
-        Time complexity: O(E + N + P)\n
-        Space Complexity: O(N)
+        Space Complexity: O(N)\n
+        Time complexity: O(N + P + C))
         """
         if node in path:
             return path

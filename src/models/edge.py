@@ -44,4 +44,4 @@ class Edge:
         distance offset by a product of 10\n
         Space-time complexity: O(1)
         """
-        self.priority = self.node_1.priority + self.node_2.priority + (self.distance * 10)
+        self.priority = self.node_1.priority + self.node_2.priority + (self.distance * 11)
