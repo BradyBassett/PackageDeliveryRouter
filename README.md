@@ -123,19 +123,19 @@ See lines 186-242 in main.py
 
 Time entered: 8:50:00
 <br>
-![First Check](images/first_check.png)
+![First Check](images/first_status_check.png)
 
 ## Second Status Check
 
 Time entered: 9:50:00 
 <br>
-![Second Check](images/second_check.png)
+![Second Check](images/second_status_check.png)
 
 ## Third Status Check
 
-Time entered: 12:05:21
+Time entered: 12:04:41
 <br>
-![Third Check](images/third_check.png)
+![Third Check](images/third_status_check.png)
 
 ## Screenshots of Code Execution
 
